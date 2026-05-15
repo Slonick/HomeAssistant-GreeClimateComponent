@@ -150,5 +150,5 @@ This project is based on the work of several contributors and projects:
 
 ## Issues
 
-Due to the many issues being created revolving TimeOut errors, I will be closing these. Feel free to make a PR fixing your TimeOut error.
+Due to the many issues being created revolving "TimeOut"/"Cannot connect" errors, I will be closing these. Feel free to make a PR fixing your TimeOut/Cannot connect error.
 More information on the "why" can be found here: https://github.com/RobHofmann/HomeAssistant-GreeClimateComponent/issues/405#issuecomment-4300110823
