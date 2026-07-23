@@ -203,9 +203,6 @@
       "lights": {
         "name": "Lights"
       },
-      "powersave": {
-        "name": "Power Save"
-      },
       "eightdegheat": {
         "name": "8°C Heat"
       },

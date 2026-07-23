@@ -49,10 +49,6 @@ async def _set_aux_heat(device, value: bool) -> None:
     await device.SyncState({"AssHt": 1 if value else 0})
 
 
-async def _set_powersave(device, value: bool) -> None:
-    await device.SyncState({"SvSt": 1 if value else 0})
-
-
 async def _set_eightdegheat(device, value: bool) -> None:
     await device.SyncState({"StHt": 1 if value else 0})
 
@@ -96,14 +92,6 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         set_fn=_set_aux_heat,
         exists_fn=lambda description, device: HVACMode.HEAT in device._hvac_modes,
         available_fn=lambda device: device._hvac_mode == HVACMode.HEAT,
-    ),
-    GreeSwitchEntityDescription(
-        property_key="powersave",
-        icon="mdi:leaf",
-        value_fn=lambda device: device._acOptions.get("SvSt") == 1,
-        set_fn=_set_powersave,
-        exists_fn=lambda description, device: HVACMode.COOL in device._hvac_modes,
-        available_fn=lambda device: device._hvac_mode == HVACMode.COOL,
     ),
     GreeSwitchEntityDescription(
         property_key="eightdegheat",

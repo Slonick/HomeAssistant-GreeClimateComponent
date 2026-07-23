@@ -154,9 +154,6 @@
       "lights": {
         "name": "אורות"
       },
-      "powersave": {
-        "name": "חיסכון בחשמל"
-      },
       "eightdegheat": {
         "name": "חימום 8°C"
       },

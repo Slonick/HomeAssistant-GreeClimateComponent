@@ -175,9 +175,6 @@
       "lights": {
         "name": "Свет"
       },
-      "powersave": {
-        "name": "Энергосбережение"
-      },
       "eightdegheat": {
         "name": "Нагрев 8°C"
       },

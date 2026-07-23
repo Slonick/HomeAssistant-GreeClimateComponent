@@ -55,6 +55,9 @@ Not reachable over the protocol:
   carries it; roughly 160 candidate names were probed. It cannot be controlled from Home Assistant.
 - **Auto clean.** Runs from the remote (MODE + FAN held for 5 seconds, `CL` on the display). The
   `AutoClean` column stays `0` throughout the cycle, so there is nothing to expose.
+- **Energy saving.** The Gree app schedules it in hours (1, 2, 4, 8) and ties it to the presence
+  sensor. Stepping through those settings moves none of the 27 status columns, so it is decided
+  in Gree's cloud and never reaches the unit over the local network. `SvSt` stays `0` throughout.
 - **Beeper.** The unit has no `Buzzer_ON_OFF` or `BuzzerCtrl` column and drops a command that
   carries only those, so the switch upstream offers could not affect anything here.
 
@@ -77,7 +80,6 @@ schedules temperature better than the unit does.
 | `select` external temperature sensor | Use another sensor instead of the built-in one |
 | `switch` X-Fan | Dries the indoor unit after shutdown |
 | `switch` Auxiliary heat | Heating only |
-| `switch` Power save | Cooling only |
 | `switch` 8 °C heat | Heating only |
 | `switch` Sleep | Cooling and heating only |
 | `switch` Lights, Light sensor | Display backlight and its automatic brightness |

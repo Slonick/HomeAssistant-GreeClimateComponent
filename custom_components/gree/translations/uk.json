@@ -206,9 +206,6 @@
       "aux_heat": {
         "name": "Додатковий нагрів"
       },
-      "powersave": {
-        "name": "Енергозбереження"
-      },
       "eightdegheat": {
         "name": "Нагрів 8 °C"
       },

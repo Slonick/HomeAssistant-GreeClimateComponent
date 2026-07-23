@@ -153,9 +153,6 @@
       "lights": {
         "name": "Luzes"
       },
-      "powersave": {
-        "name": "Economia de Energia"
-      },
       "eightdegheat": {
         "name": "Aquecimento 8°C"
       },

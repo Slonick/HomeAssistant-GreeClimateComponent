@@ -153,9 +153,6 @@
       "lights": {
         "name": "灯光"
       },
-      "powersave": {
-        "name": "节能模式"
-      },
       "eightdegheat": {
         "name": "8°C 制热"
       },

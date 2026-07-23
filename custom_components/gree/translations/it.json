@@ -153,9 +153,6 @@
       "lights": {
         "name": "Luci"
       },
-      "powersave": {
-        "name": "Risparmio energetico"
-      },
       "eightdegheat": {
         "name": "Riscaldamento 8°C"
       },

@@ -24,7 +24,7 @@ upstream, not here.
   **restart Home Assistant fully**. Reloading the integration re-runs setup but keeps the
   already-imported Python modules, so edits to `const.py` and friends will not take effect.
 - A status flag the firmware accepts proves nothing on its own. Software functions — energy
-  saving, 8 °C heating, sleep, X-Fan — *are* the flag, so accepting it is enough. Functions
+  8 °C heating, sleep, X-Fan — *are* the flag, so accepting it is enough. Functions
   backed by hardware need the hardware confirmed: the firmware happily toggled `Health` and the
   remote button worked, but the service manual for this model states the series has no health
   function and no ioniser appears in either parts list, so the switch was removed.
@@ -53,7 +53,7 @@ Polling: every 60s via async_update() → GreeGetValues()
 | `const.py` | Protocol constants and the mode mappings (Gree protocol values ↔ HA values) |
 | `helpers.py` | Temperature math: 0.5°C precision (SetTem/TemRec), °F↔°C, ±40°C sensor offset auto-detection |
 | `entity.py` | `GreeEntity` base class, `GreeEntityDescription` dataclass |
-| `switch.py` | Toggle entities (x-fan, lights, auxiliary heat, sleep, power save, …) |
+| `switch.py` | Toggle entities (x-fan, lights, auxiliary heat, sleep, light sensor, …) |
 | `number.py` | Target temperature step |
 | `select.py` | i Sense airflow mode and external temperature sensor selection |
 
@@ -73,7 +73,7 @@ If the unit is unreachable at setup, detection stays `None` and every entity is 
 ### Device State
 
 `GreeClimate._acOptions` tracks: `Pow`, `Mod`, `SetTem`, `WdSpd`, `Blo`, `SwhSlp`, `Lig`,
-`SwingLfRig`, `SwUpDn`, `Quiet`, `Tur`, `StHt`, `TemUn`, `HeatCoolType`, `TemRec`, `SvSt`, `SlpMod`,
+`SwingLfRig`, `SwUpDn`, `Quiet`, `Tur`, `StHt`, `TemUn`, `HeatCoolType`, `TemRec`, `SlpMod`,
 `AssHt`, plus `TemSen`, `LigSen` and `SmartWind` once detected.
 
 `SmartWind` is i Sense: `0` off, `1` smart, `2` follow, `3` avoid, `4` surround. It only works while
@@ -84,8 +84,9 @@ adds `12` (flaps apart) and `13` (sweep across the middle region). The values in
 upstream lists for the vertical louver do not exist on this unit.
 
 Not reachable over the protocol: Breeze (no status column carries it), Auto clean (`AutoClean`
-stays `0` while the cycle runs) and the beeper (no `Buzzer_ON_OFF` or `BuzzerCtrl` column; a
-command carrying only those gets no reply). Health is reachable but drives no hardware.
+stays `0` while the cycle runs), the beeper (no `Buzzer_ON_OFF` or `BuzzerCtrl` column) and
+energy saving (scheduled in the Gree cloud in hours; changing it moves no status column, and
+`SvSt` stays `0`). Health is reachable but drives no hardware.
 
 Every remaining switch and climate option was verified by writing its current value back and
 checking the unit echoes the option — that is how the dead beeper switch was found.

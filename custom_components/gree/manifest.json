@@ -1,7 +1,7 @@
 {
   "domain": "gree",
   "name": "Gree Soyal A/C",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "documentation": "https://github.com/Slonick/HomeAssistant-GreeClimateComponent",
   "issue_tracker": "https://github.com/Slonick/HomeAssistant-GreeClimateComponent/issues",
   "dependencies": [],

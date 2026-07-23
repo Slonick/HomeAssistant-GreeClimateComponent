@@ -153,9 +153,6 @@
       "lights": {
         "name": "Wyświetlacz"
       },
-      "powersave": {
-        "name": "Oszczędzanie energii"
-      },
       "eightdegheat": {
         "name": "Grzanie 8°C"
       },
