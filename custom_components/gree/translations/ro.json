@@ -1,10 +1,6 @@
 {
   "config": {
-    "error": {
-      "invalid_network": "CIDR invalid. Exemplu: 192.168.30.0/24",
-      "invalid_host": "Adresă IP invalidă. Exemplu: 192.168.30.50",
-      "network_too_large": "Rețeaua depășește maximul de 65536 de hosturi (/16). Împarte în mai multe CIDR-uri sau listează hosturi specifice."
-    },
+    "error": {},
     "title": "Climatizare Gree",
     "description": "Configurează aparatul de aer condiționat Gree",
     "step": {
@@ -14,17 +10,7 @@
           "host": "Adresă IP",
           "port": "Port",
           "mac": "Adresă MAC",
-          "encryption_key": "Cheie de criptare",
-          "uid": "UID",
-          "encryption_version": "Versiune criptare"
-        }
-      },
-      "discovery_options": {
-        "title": "Descoperire cross-VLAN",
-        "description": "Dispozitive într-o subrețea sau VLAN diferit? Introdu una sau mai multe rețele și/sau adrese IP specifice pentru a fi sondate prin unicast. Rutarea între VLAN-uri și regulile firewall trebuie să permită portul UDP 7000 de la Home Assistant către subrețeaua țintă.",
-        "data": {
-          "extra_scan_networks": "Rețele (CIDR-uri separate prin virgulă, ex. 192.168.30.0/24)",
-          "extra_scan_hosts": "Hosturi (IP-uri separate prin virgulă, ex. 192.168.30.50,192.168.30.51)"
+          "encryption_key": "Cheie de criptare"
         }
       }
     },
@@ -38,8 +24,6 @@
       "swing_modes": "Moduri balansare verticală",
       "swing_horizontal_modes": "Moduri balansare orizontală",
       "encryption_key": "Cheie de criptare",
-      "uid": "UID",
-      "encryption_version": "Versiune criptare",
       "disable_available_check": "Dezactivează verificarea disponibilității",
       "temp_sensor_offset": "Offset senzor temperatură"
     }
@@ -63,7 +47,6 @@
     "discovery_method": {
       "options": {
         "discover": "Descoperă dispozitive în rețeaua locală",
-        "discover_extended": "Descoperă dispozitive în alte VLAN-uri/subrețele",
         "manual": "Adaugă dispozitiv manual"
       }
     },
@@ -97,12 +80,7 @@
         "fixed_middle_up": "Fixat în poziția mijloc-sus",
         "fixed_middle": "Fixat în poziția de mijloc",
         "fixed_middle_low": "Fixat în poziția mijloc-jos",
-        "fixed_lowest": "Fixat în poziția cea mai jos",
-        "swing_downmost": "Balansare în regiunea cea mai de jos",
-        "swing_middle_low": "Balansare în regiunea mijloc-jos",
-        "swing_middle": "Balansare în regiunea de mijloc",
-        "swing_middle_up": "Balansare în regiunea mijloc-sus",
-        "swing_upmost": "Balansare în regiunea cea mai sus"
+        "fixed_lowest": "Fixat în poziția cea mai jos"
       }
     },
     "swing_horizontal_modes": {
@@ -141,12 +119,7 @@
               "fixed_middle_up": "Fixat în poziția mijloc-sus",
               "fixed_middle": "Fixat în poziția de mijloc",
               "fixed_middle_low": "Fixat în poziția mijloc-jos",
-              "fixed_lowest": "Fixat în poziția cea mai jos",
-              "swing_downmost": "Balansare în regiunea cea mai de jos",
-              "swing_middle_low": "Balansare în regiunea mijloc-jos",
-              "swing_middle": "Balansare în regiunea de mijloc",
-              "swing_middle_up": "Balansare în regiunea mijloc-sus",
-              "swing_upmost": "Balansare în regiunea cea mai sus"
+              "fixed_lowest": "Fixat în poziția cea mai jos"
             }
           },
           "swing_horizontal_mode": {
@@ -192,17 +165,11 @@
       "sleep": {
         "name": "Somn"
       },
-      "air": {
-        "name": "Aer"
-      },
       "auto_xfan": {
         "name": "X-Fan automat"
       },
       "auto_light": {
         "name": "Lumină automată"
-      },
-      "anti_direct_blow": {
-        "name": "Anti-suflare directă"
       },
       "light_sensor": {
         "name": "Senzor lumină"

@@ -1,10 +1,6 @@
 {
   "config": {
-    "error": {
-      "invalid_network": "Nieprawidłowy CIDR. Przykład: 192.168.30.0/24",
-      "invalid_host": "Nieprawidłowy adres IP. Przykład: 192.168.30.50",
-      "network_too_large": "Sieć przekracza maksymalną liczbę 65536 hostów (/16). Podziel na kilka CIDR lub wymień konkretne hosty."
-    },
+    "error": {},
     "title": "Klimatyzajca Gree",
     "description": "Skonfiguruj swój klimatyzator Gree",
     "step": {
@@ -14,17 +10,7 @@
           "host": "Adres IP",
           "port": "Port",
           "mac": "Adres MAC",
-          "encryption_key": "Klucz szyfrowania",
-          "uid": "UID",
-          "encryption_version": "Wersja szyfrowania"
-        }
-      },
-      "discovery_options": {
-        "title": "Wykrywanie między VLAN",
-        "description": "Urządzenia w innej podsieci lub VLAN? Podaj jedną lub więcej sieci i/lub konkretnych adresów IP do sprawdzenia za pomocą unicast. Routing między VLAN i reguły zapory muszą zezwalać na port UDP 7000 z Home Assistant do docelowej podsieci.",
-        "data": {
-          "extra_scan_networks": "Sieci (CIDR oddzielone przecinkami, np. 192.168.30.0/24)",
-          "extra_scan_hosts": "Hosty (adresy IP oddzielone przecinkami, np. 192.168.30.50,192.168.30.51)"
+          "encryption_key": "Klucz szyfrowania"
         }
       }
     },
@@ -38,8 +24,6 @@
       "swing_modes": "Tryby pionowego ruchu",
       "swing_horizontal_modes": "Tryby poziomego ruchu",
       "encryption_key": "Klucz szyfrowania",
-      "uid": "UID",
-      "encryption_version": "Wersja szyfrowania",
       "disable_available_check": "Wyłącz sprawdzanie dostępności",
       "temp_sensor_offset": "Offset czujnika temperatury"
     }
@@ -63,7 +47,6 @@
     "discovery_method": {
       "options": {
         "discover": "Wykryj urządzenia w sieci lokalnej",
-        "discover_extended": "Wykryj urządzenia w innych VLAN/podsieciach",
         "manual": "Dodaj urządzenie ręcznie"
       }
     },
@@ -97,12 +80,7 @@
         "fixed_middle_up": "Stały w pozycji środkowo-górnej",
         "fixed_middle": "Stały w pozycji środkowej",
         "fixed_middle_low": "Stały w pozycji środkowo-dolnej",
-        "fixed_lowest": "Stały w najniższej pozycji",
-        "swing_downmost": "Ruch w najniższym zakresie",
-        "swing_middle_low": "Ruch w środkowo-dolnym zakresie",
-        "swing_middle": "Ruch w środkowym zakresie",
-        "swing_middle_up": "Ruch w środkowo-górnym zakresie",
-        "swing_upmost": "Ruch w najwyższym zakresie"
+        "fixed_lowest": "Stały w najniższej pozycji"
       }
     },
     "swing_horizontal_modes": {
@@ -141,12 +119,7 @@
               "fixed_middle_up": "Stały w pozycji środkowo-górnej",
               "fixed_middle": "Stały w pozycji środkowej",
               "fixed_middle_low": "Stały w pozycji środkowo-dolnej",
-              "fixed_lowest": "Stały w najniższej pozycji",
-              "swing_downmost": "Ruch w najniższym zakresie",
-              "swing_middle_low": "Ruch w środkowo-dolnym zakresie",
-              "swing_middle": "Ruch w środkowym zakresie",
-              "swing_middle_up": "Ruch w środkowo-górnym zakresie",
-              "swing_upmost": "Ruch w najwyższym zakresie"
+              "fixed_lowest": "Stały w najniższej pozycji"
             }
           },
           "swing_horizontal_mode": {
@@ -200,10 +173,6 @@
         "name": "Sen",
         "description": "Włącza lub wyłącza tryb snu. Dostępne w trybach chłodzenia i grzania."
       },
-      "air": {
-        "name": "Świeże powietrze",
-        "description": "Włącza lub wyłącza tryb wpuszczania swieżego powietrza z zewnątrz."
-      },
       "auto_xfan": {
         "name": "Automatyczny X-Fan",
         "description": "Automatycznie zarządza trybem X-Fan. Gdy jest włączony, X-Fan automatycznie się włączy w trybie chłodzenia i suszenia."
@@ -211,10 +180,6 @@
       "auto_light": {
         "name": "Automatyczny wyświetlacz",
         "description": "Automatycznie zarządza wyświetlaczem jednostki wewnętrznej. Włącza go i wyłącza razem z jednostką."
-      },
-      "anti_direct_blow": {
-        "name": "Ochrony przed bezpośrednim nawiewem",
-        "description": "Zapobiega bezpośredniemu nawiewowi powietrza na osoby przebywające w pomieszczeniu przez regulacje deflektora."
       },
       "light_sensor": {
         "name": "Czujnik światła",

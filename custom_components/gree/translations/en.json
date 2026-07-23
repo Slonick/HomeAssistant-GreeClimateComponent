@@ -1,10 +1,7 @@
 {
   "config": {
     "error": {
-      "cannot_connect": "Unable to connect to the device. Please check the network connection and try again.",
-      "invalid_network": "Invalid CIDR. Example: 192.168.30.0/24",
-      "invalid_host": "Invalid IP address. Example: 192.168.30.50",
-      "network_too_large": "Network exceeds the maximum of 65536 hosts (a /16). Split into multiple CIDRs or list specific hosts."
+      "cannot_connect": "Unable to connect to the device. Please check the network connection and try again."
     },
     "abort": {
       "already_configured": "A device with this MAC address is already configured."
@@ -17,14 +14,6 @@
         "description": "Choose how to add your Gree air conditioner",
         "data": {
           "discovery": "Setup Method"
-        }
-      },
-      "discovery_options": {
-        "title": "Cross-VLAN Discovery",
-        "description": "Devices on a different subnet or VLAN? Enter one or more networks and/or specific IP addresses to probe via unicast. Inter-VLAN routing and firewall rules must allow UDP port 7000 from Home Assistant to the target subnet.",
-        "data": {
-          "extra_scan_networks": "Networks (comma-separated CIDRs, e.g. 192.168.30.0/24)",
-          "extra_scan_hosts": "Hosts (comma-separated IPs, e.g. 192.168.30.50,192.168.30.51)"
         }
       },
       "discovery": {
@@ -49,9 +38,7 @@
           "host": "IP Address",
           "port": "Port",
           "mac": "MAC Address",
-          "encryption_key": "Encryption Key",
-          "uid": "UID",
-          "encryption_version": "Encryption Version"
+          "encryption_key": "Encryption Key"
         }
       }
     },
@@ -60,13 +47,11 @@
       "host": "IP Address",
       "port": "Port",
       "mac": "MAC Address",
-      "hvac_modes" : "HVAC Modes",
-      "fan_modes" : "Fan Modes",
-      "swing_modes" : "Vertical Swing Modes",
-      "swing_horizontal_modes" : "Horizontal Swing Modes",
+      "hvac_modes": "HVAC Modes",
+      "fan_modes": "Fan Modes",
+      "swing_modes": "Vertical Swing Modes",
+      "swing_horizontal_modes": "Horizontal Swing Modes",
       "encryption_key": "Encryption Key",
-      "uid": "UID",
-      "encryption_version": "Encryption Version",
       "disable_available_check": "Disable Available Check",
       "temp_sensor_offset": "Temperature Sensor Offset"
     }
@@ -76,10 +61,10 @@
       "init": {
         "title": "Gree Climate Options",
         "data": {
-          "hvac_modes" : "HVAC Modes",
-          "fan_modes" : "Fan Modes",
-          "swing_modes" : "Vertical Swing Modes",
-          "swing_horizontal_modes" : "Horizontal Swing Modes",
+          "hvac_modes": "HVAC Modes",
+          "fan_modes": "Fan Modes",
+          "swing_modes": "Vertical Swing Modes",
+          "swing_horizontal_modes": "Horizontal Swing Modes",
           "disable_available_check": "Disable Available Check",
           "temp_sensor_offset": "Temperature Sensor Offset"
         }
@@ -90,7 +75,6 @@
     "discovery_method": {
       "options": {
         "discover": "Discover devices on the local network",
-        "discover_extended": "Discover devices on other VLANs/subnets",
         "manual": "Add device manually"
       }
     },
@@ -124,12 +108,7 @@
         "fixed_middle_up": "Fixed in the middle-up position",
         "fixed_middle": "Fixed in the middle position",
         "fixed_middle_low": "Fixed in the middle-low position",
-        "fixed_lowest": "Fixed in the lowest position",
-        "swing_downmost": "Swing in the downmost region",
-        "swing_middle_low": "Swing in the middle-low region",
-        "swing_middle": "Swing in the middle region",
-        "swing_middle_up": "Swing in the middle-up region",
-        "swing_upmost": "Swing in the upmost region"
+        "fixed_lowest": "Fixed in the lowest position"
       }
     },
     "swing_horizontal_modes": {
@@ -140,7 +119,9 @@
         "fixed_middle_left": "Fixed in the middle-left position",
         "fixed_middle": "Fixed in the middle position",
         "fixed_middle_right": "Fixed in the middle-right position",
-        "fixed_rightmost": "Fixed in the rightmost position"
+        "fixed_rightmost": "Fixed in the rightmost position",
+        "fixed_outward": "Louvers apart",
+        "swing_middle": "Swing in the middle region"
       }
     }
   },
@@ -168,12 +149,7 @@
               "fixed_middle_up": "Fixed in the middle-up position",
               "fixed_middle": "Fixed in the middle position",
               "fixed_middle_low": "Fixed in the middle-low position",
-              "fixed_lowest": "Fixed in the lowest position",
-              "swing_downmost": "Swing in the downmost region",
-              "swing_middle_low": "Swing in the middle-low region",
-              "swing_middle": "Swing in the middle region",
-              "swing_middle_up": "Swing in the middle-up region",
-              "swing_upmost": "Swing in the upmost region"
+              "fixed_lowest": "Fixed in the lowest position"
             }
           },
           "swing_horizontal_mode": {
@@ -184,7 +160,9 @@
               "fixed_middle_left": "Fixed in the middle-left position",
               "fixed_middle": "Fixed in the middle position",
               "fixed_middle_right": "Fixed in the middle-right position",
-              "fixed_rightmost": "Fixed in the rightmost position"
+              "fixed_rightmost": "Fixed in the rightmost position",
+              "fixed_outward": "Louvers apart",
+              "swing_middle": "Swing in the middle region"
             }
           }
         }
@@ -213,16 +191,6 @@
         }
       }
     },
-    "sensor": {
-      "outside_temperature": {
-        "name": "Outside Temperature",
-        "description": "Shows the outside temperature measured by the air conditioner's external sensor."
-      },
-      "room_humidity": {
-        "name": "Room Humidity",
-        "description": "Shows the room humidity level measured by the air conditioner's internal sensor."
-      }
-    },
     "switch": {
       "xfan": {
         "name": "X-Fan",
@@ -248,10 +216,6 @@
         "name": "Sleep",
         "description": "Enables or disables the sleep mode for comfortable overnight operation. Only available in cooling or heating mode."
       },
-      "air": {
-        "name": "Air",
-        "description": "Enables or disables the fresh air circulation mode."
-      },
       "auto_xfan": {
         "name": "Auto X-Fan",
         "description": "Automatically controls the X-Fan mode based on HVAC operations. When enabled, X-Fan will automatically turn on in cooling and dry modes."
@@ -260,10 +224,6 @@
         "name": "Auto Light",
         "description": "Automatically controls the display lights based on HVAC operations. When enabled, lights will turn on/off with the AC unit."
       },
-      "anti_direct_blow": {
-        "name": "Anti Direct Blow",
-        "description": "Prevents direct air flow from blowing on people by adjusting the air deflector position."
-      },
       "light_sensor": {
         "name": "Light Sensor",
         "description": "Enables or disables light sensor for automatic brightness. Requires lights to be enabled."
@@ -271,6 +231,10 @@
       "beeper": {
         "name": "Beeper",
         "description": "Controls the beeper sounds from the air conditioner unit. When enabled, the unit will make sounds for button presses and status changes."
+      },
+      "aux_heat": {
+        "name": "Auxiliary Heat",
+        "description": "Enables the auxiliary electric heater. Only available in heating mode."
       }
     }
   }

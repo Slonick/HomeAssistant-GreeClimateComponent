@@ -4,24 +4,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Custom Home Assistant integration for controlling Gree-compatible air conditioners over the local network via UDP (port 7000). Distributed through HACS. Domain: `gree`, version 3.3.2.
+Home Assistant integration for one air conditioner: the GREE Soyal Inverter GWH09AKCXD-K6DNA1A,
+controlled over the local network via UDP port 7000. Domain: `gree`.
 
-**Dependencies**: `pycryptodome` (AES encryption), `aiofiles` (async file I/O)
+This is a fork of RobHofmann/HomeAssistant-GreeClimateComponent narrowed to that single model.
+Support for hardware and setups this unit does not have was deleted rather than kept behind feature
+checks — encryption v1, YAML configuration, cross-VLAN unicast discovery, sub-devices, the `uid`
+parameter, the outside temperature and room humidity sensors and the anti-direct-blow switch are all
+gone. Keep it that way: when a change would only matter to some other Gree model, it belongs
+upstream, not here.
+
+**Dependencies**: `pycryptodome` (AES-GCM), `aiofiles`
 
 ## Development Notes
 
-- **No build system, test suite, or linting configuration exists.** There is no setup.py, pyproject.toml, pytest, flake8, or similar tooling.
-- All code lives under `custom_components/gree/`. There are no other source directories.
-- To test changes, copy `custom_components/gree/` into a Home Assistant installation's `custom_components/` directory and restart HA.
+- **No build system, test suite, or linting configuration exists.**
+- All code lives under `custom_components/gree/`.
+- To test, copy `custom_components/gree/` into a Home Assistant `custom_components/` directory and
+  **restart Home Assistant fully**. Reloading the integration re-runs setup but keeps the
+  already-imported Python modules, so edits to `const.py` and friends will not take effect.
+- Claims about what the unit supports should be checked against the unit, not against a manual.
+  The manual for the neighbouring GWH09AKC variant states this series has no Health function; the
+  unit answers the `Health` column and the button works.
 
 ## Architecture
 
 ### Data Flow
 
 ```
-HA UI action → Entity method → GreeClimate.SendStateToAc()
-    → AES encrypt → UDP packet to device:7000 → device response
-    → AES decrypt → update _acOptions dict → update HA entity state
+HA UI action → Entity method → GreeClimate.SyncState({...}) → SendStateToAc()
+    → AES-GCM encrypt → UDP packet to device:7000 → device response
+    → decrypt → update _acOptions dict → update HA entity state
 
 Polling: every 60s via async_update() → GreeGetValues()
 ```
@@ -30,38 +43,54 @@ Polling: every 60s via async_update() → GreeGetValues()
 
 | File | Purpose |
 |---|---|
-| `__init__.py` | Integration setup, YAML config schema, platform forwarding (climate/switch/number/select/sensor) |
-| `climate.py` | **Core file (912 lines)**. `GreeClimate(ClimateEntity)` — HVAC control, state polling, temperature handling, all AC commands |
-| `gree_protocol.py` | UDP communication, AES encryption (v1=ECB, v2=GCM), device discovery, key negotiation, retry logic (8 attempts with backoff) |
-| `config_flow.py` | UI config flow: discovery → encryption detection → device setup. Also handles options flow for runtime reconfiguration |
-| `const.py` | Protocol constants, mode mappings (Gree protocol values ↔ HA values), config option keys |
-| `helpers.py` | Temperature math: 0.5°C precision encoding (SetTem/TemRec), °F↔°C conversion, ±40°C sensor offset auto-detection (`TempOffsetResolver`) |
+| `__init__.py` | Config entry setup, one-shot feature probe, platform forwarding (climate/switch/number/select) |
+| `climate.py` | Core file. `GreeClimate(ClimateEntity)` — HVAC control, state polling, temperature handling, all AC commands |
+| `gree_protocol.py` | UDP communication, AES-GCM, device discovery, key negotiation, retry logic (8 attempts with backoff) |
+| `config_flow.py` | UI config flow: discovery → naming → setup. Also the options flow |
+| `const.py` | Protocol constants and the mode mappings (Gree protocol values ↔ HA values) |
+| `helpers.py` | Temperature math: 0.5°C precision (SetTem/TemRec), °F↔°C, ±40°C sensor offset auto-detection |
 | `entity.py` | `GreeEntity` base class, `GreeEntityDescription` dataclass |
-| `switch.py` | 12 toggle entities (x-fan, lights, health, sleep, power save, etc.) |
-| `sensor.py` | Outside temperature and room humidity sensors |
-| `number.py` | Target temperature step configuration entity |
-| `select.py` | External temperature sensor selection entity |
+| `switch.py` | Toggle entities (x-fan, lights, health, auxiliary heat, sleep, power save, …) |
+| `number.py` | Target temperature step |
+| `select.py` | i Sense airflow mode and external temperature sensor selection |
 
-### Encryption Protocol
+### Feature Detection
 
-Two encryption versions exist:
-- **v1**: AES-128 ECB with generic key `a3K8Bx%2r8Y7#xDh`
-- **v2**: AES-128 GCM with device-specific key, fixed IV and AAD
+`OPTIONAL_FEATURES` in `climate.py` lists the status columns that only some units answer.
+`DetectOptionalFeatures()` probes each one and caches the result, `__init__.py` runs it once before
+the platforms are set up, and the platforms skip descriptions whose `exists_fn` returns false.
 
-Encryption version is auto-detected during setup. The device key is retrieved via a handshake in `GetDeviceKey()`/`GetDeviceKeyGCM()`.
+A unit without the hardware answers a status request for that column with an **empty result** — that
+is the test. Do not test for a falsy value: `SmartWind` reads `0` when i Sense is off, and treating
+that as missing hardware is exactly the bug this replaced. Room humidity is the documented exception
+(`zero_means_absent`), because units without the sensor do answer with a constant `0`.
 
-### Temperature Handling
-
-The AC uses integer `SetTem` plus a `TemRec` bit for 0.5°C precision. Some devices report sensor temps with a +40°C offset. `TempOffsetResolver` auto-detects which mode the device uses based on observed temperature history. Fahrenheit support uses custom conversion functions (not simple formulas) due to protocol quirks.
+If the unit is unreachable at setup, detection stays `None` and every entity is created.
 
 ### Device State
 
-`GreeClimate._acOptions` dict tracks 19+ device properties: `Pow`, `Mod`, `SetTem`, `WdSpd`, `Air`, `Blo`, `Health`, `SwhSlp`, `Lig`, `SwUpDn`, `SwingLfRig`, `Quiet`, `Tur`, `StHt`, `TemUn`, `HeatCoolType`, `TemRec`, `SvSt`, `SlpMod`, and optionally `AntiDirectBlow`, `LigSen`, `OutEnvTem`, `TemSen`, `Buzzer_ON_OFF`.
+`GreeClimate._acOptions` tracks: `Pow`, `Mod`, `SetTem`, `WdSpd`, `Blo`, `Health`, `SwhSlp`, `Lig`,
+`SwingLfRig`, `SwUpDn`, `Quiet`, `Tur`, `StHt`, `TemUn`, `HeatCoolType`, `TemRec`, `SvSt`, `SlpMod`,
+`AssHt`, plus `TemSen`, `LigSen` and `SmartWind` once detected.
+
+`SmartWind` is i Sense: `0` off, `1` smart, `2` follow, `3` avoid, `4` surround. It only works while
+cooling or heating and steers both louvers by itself.
+
+Louver positions are in `MODES_MAPPING`. The vertical louver stops at `0`–`6`; the horizontal one
+adds `12` (flaps apart) and `13` (sweep across the middle region). The values in between that
+upstream lists for the vertical louver do not exist on this unit.
+
+Two functions the remote has are not reachable over the protocol at all: Breeze (no status column
+carries it) and Auto clean (`AutoClean` stays `0` while the cycle runs).
+
+### Temperature Handling
+
+The AC uses integer `SetTem` plus a `TemRec` bit for 0.5°C precision. Some devices report sensor
+temps with a +40°C offset; `TempOffsetResolver` auto-detects which mode the device uses from
+observed history. Fahrenheit support uses custom conversion functions, not simple formulas, because
+of protocol quirks.
 
 ### Configuration
 
-Two config methods: UI config flow (recommended, with auto-discovery) and YAML import. See `manual-configuration.yaml` for YAML reference. Options flow allows runtime changes to available modes and sensor offset.
-
-### VRF Support
-
-VRF (Variable Refrigerant Flow) sub-units are addressed via MAC format `subMAC@mainMAC` and discovered through `get_subunits_list()`.
+UI config flow only, with auto-discovery. The options flow allows runtime changes to the available
+modes and the sensor offset; saving reloads the entry.

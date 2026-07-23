@@ -1,15 +1,15 @@
 {
   "domain": "gree",
-  "name": "Gree A/C",
-  "version": "3.6.0",
-  "documentation": "https://github.com/RobHofmann/HomeAssistant-GreeClimateComponent",
+  "name": "Gree Soyal A/C",
+  "version": "1.0.0",
+  "documentation": "https://github.com/Slonick/HomeAssistant-GreeClimateComponent",
+  "issue_tracker": "https://github.com/Slonick/HomeAssistant-GreeClimateComponent/issues",
   "dependencies": [],
   "codeowners": [
-    "@robhofmann"
+    "@Slonick"
   ],
   "requirements": [
-    "pycryptodome",
-    "aiofiles"
+    "pycryptodome"
   ],
   "config_flow": true
 }

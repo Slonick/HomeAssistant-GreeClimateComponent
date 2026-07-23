@@ -1,10 +1,6 @@
 {
   "config": {
-    "error": {
-      "invalid_network": "CIDR non valido. Esempio: 192.168.30.0/24",
-      "invalid_host": "Indirizzo IP non valido. Esempio: 192.168.30.50",
-      "network_too_large": "La rete supera il massimo di 65536 host (un /16). Suddividila in più CIDR o elenca host specifici."
-    },
+    "error": {},
     "title": "Clima Gree",
     "description": "Configura il tuo condizionatore Gree",
     "step": {
@@ -14,17 +10,7 @@
           "host": "Indirizzo IP",
           "port": "Porta",
           "mac": "Indirizzo MAC",
-          "encryption_key": "Chiave di crittografia",
-          "uid": "UID",
-          "encryption_version": "Versione crittografia"
-        }
-      },
-      "discovery_options": {
-        "title": "Rilevamento cross-VLAN",
-        "description": "Dispositivi su una subnet o VLAN diversa? Inserisci una o più reti e/o indirizzi IP specifici da sondare tramite unicast. Il routing inter-VLAN e le regole del firewall devono consentire la porta UDP 7000 da Home Assistant alla subnet di destinazione.",
-        "data": {
-          "extra_scan_networks": "Reti (CIDR separati da virgole, es. 192.168.30.0/24)",
-          "extra_scan_hosts": "Host (IP separati da virgole, es. 192.168.30.50,192.168.30.51)"
+          "encryption_key": "Chiave di crittografia"
         }
       }
     },
@@ -38,8 +24,6 @@
       "swing_modes": "Modalità oscillazione verticale",
       "swing_horizontal_modes": "Modalità oscillazione orizzontale",
       "encryption_key": "Chiave di crittografia",
-      "uid": "UID",
-      "encryption_version": "Versione crittografia",
       "disable_available_check": "Disabilita controllo disponibilità",
       "temp_sensor_offset": "Offset sensore temperatura"
     }
@@ -63,7 +47,6 @@
     "discovery_method": {
       "options": {
         "discover": "Rileva dispositivi nella rete locale",
-        "discover_extended": "Rileva dispositivi in altre VLAN/subnet",
         "manual": "Aggiungi dispositivo manualmente"
       }
     },
@@ -97,12 +80,7 @@
         "fixed_middle_up": "Fisso in posizione medio-alta",
         "fixed_middle": "Fisso in posizione centrale",
         "fixed_middle_low": "Fisso in posizione medio-bassa",
-        "fixed_lowest": "Fisso in posizione più bassa",
-        "swing_downmost": "Oscillazione nella regione più bassa",
-        "swing_middle_low": "Oscillazione nella regione medio-bassa",
-        "swing_middle": "Oscillazione nella regione centrale",
-        "swing_middle_up": "Oscillazione nella regione medio-alta",
-        "swing_upmost": "Oscillazione nella regione più alta"
+        "fixed_lowest": "Fisso in posizione più bassa"
       }
     },
     "swing_horizontal_modes": {
@@ -141,12 +119,7 @@
               "fixed_middle_up": "Fisso in posizione medio-alta",
               "fixed_middle": "Fisso in posizione centrale",
               "fixed_middle_low": "Fisso in posizione medio-bassa",
-              "fixed_lowest": "Fisso in posizione più bassa",
-              "swing_downmost": "Oscillazione nella regione più bassa",
-              "swing_middle_low": "Oscillazione nella regione medio-bassa",
-              "swing_middle": "Oscillazione nella regione centrale",
-              "swing_middle_up": "Oscillazione nella regione medio-alta",
-              "swing_upmost": "Oscillazione nella regione più alta"
+              "fixed_lowest": "Fisso in posizione più bassa"
             }
           },
           "swing_horizontal_mode": {
@@ -192,17 +165,11 @@
       "sleep": {
         "name": "Sonno"
       },
-      "air": {
-        "name": "Aria"
-      },
       "auto_xfan": {
         "name": "X-Fan automatico"
       },
       "auto_light": {
         "name": "Luce automatica"
-      },
-      "anti_direct_blow": {
-        "name": "Anti-soffio diretto"
       },
       "light_sensor": {
         "name": "Sensore luce"

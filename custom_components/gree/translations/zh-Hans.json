@@ -1,10 +1,6 @@
 {
   "config": {
-    "error": {
-      "invalid_network": "CIDR 无效。示例：192.168.30.0/24",
-      "invalid_host": "IP 地址无效。示例：192.168.30.50",
-      "network_too_large": "网络超过 65536 个主机的最大值（/16）。请拆分为多个 CIDR 或列出特定主机。"
-    },
+    "error": {},
     "title": "格力空调",
     "description": "配置您的格力空调",
     "step": {
@@ -14,17 +10,7 @@
           "host": "IP 地址",
           "port": "端口",
           "mac": "MAC 地址",
-          "encryption_key": "加密密钥",
-          "uid": "UID",
-          "encryption_version": "加密版本"
-        }
-      },
-      "discovery_options": {
-        "title": "跨 VLAN 发现",
-        "description": "设备位于其他子网或 VLAN？输入一个或多个网络和/或特定 IP 地址，通过 unicast 进行探测。VLAN 间路由和防火墙规则必须允许 Home Assistant 通过 UDP 端口 7000 访问目标子网。",
-        "data": {
-          "extra_scan_networks": "网络（逗号分隔的 CIDR，例如 192.168.30.0/24）",
-          "extra_scan_hosts": "主机（逗号分隔的 IP，例如 192.168.30.50,192.168.30.51）"
+          "encryption_key": "加密密钥"
         }
       }
     },
@@ -38,8 +24,6 @@
       "swing_modes": "垂直扫风模式",
       "swing_horizontal_modes": "水平扫风模式",
       "encryption_key": "加密密钥",
-      "uid": "UID",
-      "encryption_version": "加密版本",
       "disable_available_check": "禁用可用性检查",
       "temp_sensor_offset": "温度传感器偏移"
     }
@@ -63,7 +47,6 @@
     "discovery_method": {
       "options": {
         "discover": "发现本地网络中的设备",
-        "discover_extended": "发现其他 VLAN/子网中的设备",
         "manual": "手动添加设备"
       }
     },
@@ -97,12 +80,7 @@
         "fixed_middle_up": "固定在中上位置",
         "fixed_middle": "固定在中间位置",
         "fixed_middle_low": "固定在中下位置",
-        "fixed_lowest": "固定在最低位置",
-        "swing_downmost": "在最下区域扫风",
-        "swing_middle_low": "在中下区域扫风",
-        "swing_middle": "在中间区域扫风",
-        "swing_middle_up": "在中上区域扫风",
-        "swing_upmost": "在最上区域扫风"
+        "fixed_lowest": "固定在最低位置"
       }
     },
     "swing_horizontal_modes": {
@@ -141,12 +119,7 @@
               "fixed_middle_up": "固定在中上位置",
               "fixed_middle": "固定在中间位置",
               "fixed_middle_low": "固定在中下位置",
-              "fixed_lowest": "固定在最低位置",
-              "swing_downmost": "在最下区域扫风",
-              "swing_middle_low": "在中下区域扫风",
-              "swing_middle": "在中间区域扫风",
-              "swing_middle_up": "在中上区域扫风",
-              "swing_upmost": "在最上区域扫风"
+              "fixed_lowest": "固定在最低位置"
             }
           },
           "swing_horizontal_mode": {
@@ -192,17 +165,11 @@
       "sleep": {
         "name": "睡眠模式"
       },
-      "air": {
-        "name": "清新空气"
-      },
       "auto_xfan": {
         "name": "自动防霉风"
       },
       "auto_light": {
         "name": "自动灯光"
-      },
-      "anti_direct_blow": {
-        "name": "防直吹"
       },
       "light_sensor": {
         "name": "光照传感器"

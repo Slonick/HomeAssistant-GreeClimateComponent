@@ -5,7 +5,6 @@ This module defines the climate (HVAC) unit for the Gree integration.
 """
 
 # Standard library imports
-import base64
 import logging
 from datetime import timedelta
 
@@ -14,7 +13,6 @@ try:
     import simplejson
 except ImportError:
     import json as simplejson
-from Crypto.Cipher import AES
 
 # Home Assistant imports
 from homeassistant.components.climate import ClimateEntity, ClimateEntityFeature, HVACMode
@@ -48,12 +46,10 @@ from .const import (
     CONF_SWING_MODES,
     CONF_SWING_HORIZONTAL_MODES,
     CONF_ENCRYPTION_KEY,
-    CONF_UID,
-    CONF_ENCRYPTION_VERSION,
     CONF_DISABLE_AVAILABLE_CHECK,
     CONF_TEMP_SENSOR_OFFSET,
 )
-from .gree_protocol import Pad, FetchResult, GetDeviceKey, GetGCMCipher, EncryptGCM, GetDeviceKeyGCM
+from .gree_protocol import FetchResult, GetGCMCipher, EncryptGCM, GetDeviceKeyGCM
 from .helpers import TempOffsetResolver, gree_f_to_c, gree_c_to_f, encode_temp_c, decode_temp_c
 
 REQUIREMENTS = ["pycryptodome"]
@@ -70,10 +66,7 @@ SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.F
 # sensor is missing, which for a humidity reading is not a value the hardware could measure.
 OPTIONAL_FEATURES = (
     ("_has_temp_sensor", "TemSen", False),
-    ("_has_anti_direct_blow", "AntiDirectBlow", False),
     ("_has_light_sensor", "LigSen", False),
-    ("_has_outside_temp_sensor", "OutEnvTem", False),
-    ("_has_room_humidity_sensor", "DwatSen", True),
     ("_has_smart_wind", "SmartWind", False),
 )
 
@@ -95,8 +88,6 @@ async def create_gree_device(hass, config):
     cshm = config.get(CONF_SWING_HORIZONTAL_MODES)
     swing_horizontal_modes = cshm if cshm is not None else DEFAULT_SWING_HORIZONTAL_MODES
     encryption_key = config.get(CONF_ENCRYPTION_KEY)
-    uid = config.get(CONF_UID)
-    encryption_version = config.get(CONF_ENCRYPTION_VERSION, 1)
     disable_available_check = config.get(CONF_DISABLE_AVAILABLE_CHECK, False)
     temp_sensor_offset = config.get(CONF_TEMP_SENSOR_OFFSET)
 
@@ -110,10 +101,8 @@ async def create_gree_device(hass, config):
         fan_modes,
         swing_modes,
         swing_horizontal_modes,
-        encryption_version,
         disable_available_check,
         encryption_key,
-        uid,
         temp_sensor_offset,
     )
 
@@ -153,10 +142,8 @@ class GreeClimate(ClimateEntity):
         fan_modes,
         swing_modes,
         swing_horizontal_modes,
-        encryption_version,
         disable_available_check,
         encryption_key=None,
-        uid=None,
         temp_sensor_offset=None,
     ):
         _LOGGER.info(f"{name}: Initializing Gree climate device")
@@ -165,12 +152,8 @@ class GreeClimate(ClimateEntity):
         self._name = name
         self._ip_addr = ip_addr
         self._port = port
-        mac_addr_str = mac_addr.decode("utf-8").lower()
-        if "@" in mac_addr_str:
-            self._sub_mac_addr, self._mac_addr = mac_addr_str.split("@", 1)
-        else:
-            self._sub_mac_addr = self._mac_addr = mac_addr_str
-        self._unique_id = f"{DOMAIN}_{self._sub_mac_addr}"
+        self._mac_addr = mac_addr.decode("utf-8").lower()
+        self._unique_id = f"{DOMAIN}_{self._mac_addr}"
         self._device_online = None
         self._disable_available_check = disable_available_check
 
@@ -199,47 +182,27 @@ class GreeClimate(ClimateEntity):
         self._listeners: list = []
 
         self._has_temp_sensor = None
-        self._has_anti_direct_blow = None
         self._has_light_sensor = None
-        self._has_outside_temp_sensor = None
-        self._has_room_humidity_sensor = None
         self._has_smart_wind = None
 
         self._current_temperature = None
-        self._current_anti_direct_blow = None
         self._current_light_sensor = None
-        self._current_outside_temperature = None
-        self._current_room_humidity = None
 
         self._firstTimeRun = True
 
         self._enable_turn_on_off_backwards_compatibility = False
 
-        self.encryption_version = encryption_version
-        self.CIPHER = None
-
         if encryption_key:
             _LOGGER.info(f"{self._name}: Using configured encryption key: {encryption_key}")
             self._encryption_key = encryption_key.encode("utf8")
-            if encryption_version == 1:
-                # Cipher to use to encrypt/decrypt
-                self.CIPHER = AES.new(self._encryption_key, AES.MODE_ECB)
-            elif self.encryption_version != 2:
-                _LOGGER.error(f"{self._name}: Encryption version {self.encryption_version} is not implemented")
         else:
             self._encryption_key = None
-
-        if uid:
-            self._uid = uid
-        else:
-            self._uid = 0
 
         self._acOptions = {
             "Pow": None,
             "Mod": None,
             "SetTem": None,
             "WdSpd": None,
-            "Air": None,
             "Blo": None,
             "Health": None,
             "SwhSlp": None,
@@ -254,8 +217,9 @@ class GreeClimate(ClimateEntity):
             "TemRec": None,
             "SvSt": None,
             "SlpMod": None,
+            "AssHt": None,
         }
-        self._optionsToFetch = ["Pow", "Mod", "SetTem", "WdSpd", "Air", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod"]
+        self._optionsToFetch = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AssHt"]
 
         # Initialize auto switches
         self._auto_light = False
@@ -268,15 +232,10 @@ class GreeClimate(ClimateEntity):
         self._process_temp_sensor = TempOffsetResolver()
 
     async def GreeGetValues(self, propertyNames):
-        plaintext = '{"cols":' + simplejson.dumps(propertyNames) + ',"mac":"' + str(self._sub_mac_addr) + '","t":"status"}'
-        if self.encryption_version == 1:
-            cipher = self.CIPHER
-            jsonPayloadToSend = '{"cid":"app","i":0,"pack":"' + base64.b64encode(cipher.encrypt(Pad(plaintext).encode("utf8"))).decode("utf-8") + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":{}'.format(self._uid) + "}"
-        elif self.encryption_version == 2:
-            pack, tag = EncryptGCM(self._encryption_key, plaintext)
-            jsonPayloadToSend = '{"cid":"app","i":0,"pack":"' + pack + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":{}'.format(self._uid) + ',"tag" : "' + tag + '"}'
-            cipher = GetGCMCipher(self._encryption_key)
-        result = await FetchResult(cipher, self._ip_addr, self._port, jsonPayloadToSend, encryption_version=self.encryption_version)
+        plaintext = '{"cols":' + simplejson.dumps(propertyNames) + ',"mac":"' + str(self._mac_addr) + '","t":"status"}'
+        pack, tag = EncryptGCM(self._encryption_key, plaintext)
+        jsonPayloadToSend = '{"cid":"app","i":0,"pack":"' + pack + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":0' + ',"tag" : "' + tag + '"}'
+        result = await FetchResult(GetGCMCipher(self._encryption_key), self._ip_addr, self._port, jsonPayloadToSend)
         return result["dat"][0] if len(result["dat"]) == 1 else result["dat"]
 
     def SetAcOptions(self, acOptions, newOptionsToOverride, optionValuesToOverride=None):
@@ -298,7 +257,7 @@ class GreeClimate(ClimateEntity):
         return acOptions
 
     async def SendStateToAc(self):
-        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Air", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AntiDirectBlow", "LigSen", "SmartWind"]
+        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "LigSen", "SmartWind", "AssHt"]
 
         # Collect values from _acOptions
         p_values = [self._acOptions.get(k) for k in opt_list]
@@ -321,16 +280,11 @@ class GreeClimate(ClimateEntity):
 
         _LOGGER.debug(f"{self._name}: Sending command with beeper {'enabled' if self._beeper_enabled else 'disabled'} (buzzer={buzzer_command_value})")
 
-        statePackJson = '{"opt":[' + ",".join(filtered_opt) + '],"p":[' + ",".join(filtered_p) + '],"t":"cmd","sub":"' + self._sub_mac_addr + '"}'
+        statePackJson = '{"opt":[' + ",".join(filtered_opt) + '],"p":[' + ",".join(filtered_p) + '],"t":"cmd","sub":"' + self._mac_addr + '"}'
 
-        if self.encryption_version == 1:
-            cipher = self.CIPHER
-            sentJsonPayload = '{"cid":"app","i":0,"pack":"' + base64.b64encode(cipher.encrypt(Pad(statePackJson).encode("utf8"))).decode("utf-8") + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":{}'.format(self._uid) + "}"
-        elif self.encryption_version == 2:
-            pack, tag = EncryptGCM(self._encryption_key, statePackJson)
-            sentJsonPayload = '{"cid":"app","i":0,"pack":"' + pack + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":{}'.format(self._uid) + ',"tag":"' + tag + '"}'
-            cipher = GetGCMCipher(self._encryption_key)
-        result = await FetchResult(cipher, self._ip_addr, self._port, sentJsonPayload, encryption_version=self.encryption_version)
+        pack, tag = EncryptGCM(self._encryption_key, statePackJson)
+        sentJsonPayload = '{"cid":"app","i":0,"pack":"' + pack + '","t":"pack","tcid":"' + str(self._mac_addr) + '","uid":0' + ',"tag":"' + tag + '"}'
+        result = await FetchResult(GetGCMCipher(self._encryption_key), self._ip_addr, self._port, sentJsonPayload)
         _LOGGER.debug(f"{self._name}: Command sent successfully: {str(result)}")
 
     def UpdateHATargetTemperature(self):
@@ -436,42 +390,6 @@ class GreeClimate(ClimateEntity):
 
             _LOGGER.debug(f"{self._name}: UpdateHACurrentTemperature: HA current temperature set with device built-in temperature sensor state: {self._current_temperature}{self._unit_of_measurement}")
 
-    def UpdateHAOutsideTemperature(self):
-        # Update outside temperature from built-in AC outside temperature sensor if available
-        if self._has_outside_temp_sensor:
-            _LOGGER.debug(f"{self._name}: UpdateHAOutsideTemperature: OutEnvTem: {self._acOptions['OutEnvTem']}")
-
-            if self._temp_sensor_offset is None:  # user hasn't chosen an offset
-                # User hasn't set automatically, so try to determine the offset
-                temp_c = self._process_temp_sensor(self._acOptions["OutEnvTem"])
-                _LOGGER.debug("method UpdateHAOutsideTemperature: User has not chosen an offset, using process_temp_sensor() to automatically determine offset.")
-            else:
-                # User set
-                if self._temp_sensor_offset is True:
-                    temp_c = self._acOptions["OutEnvTem"] - TEMSEN_OFFSET
-                elif self._temp_sensor_offset is False:
-                    temp_c = self._acOptions["OutEnvTem"]
-
-                _LOGGER.debug(f"method UpdateHAOutsideTemperature: User has chosen an offset ({self._temp_sensor_offset})")
-
-            temp_f = gree_c_to_f(SetTem=temp_c, TemRec=0)  # Convert to Fahrenheit using TemRec bit
-
-            if self._unit_of_measurement == "°C":
-                self._current_outside_temperature = temp_c
-            elif self._unit_of_measurement == "°F":
-                self._current_outside_temperature = temp_f
-            else:
-                _LOGGER.error("Unknown unit of measurement for outside temperature: %s" % self._unit_of_measurement)
-
-            _LOGGER.debug(f"{self._name}: UpdateHAOutsideTemperature: HA outside temperature set with device built-in outside temperature sensor state: {self._current_outside_temperature}{self._unit_of_measurement}")
-
-    def UpdateHARoomHumidity(self):
-        # Update room humidity from built-in AC room humidity sensor if available
-        if self._has_room_humidity_sensor:
-            _LOGGER.debug(f"{self._name}: UpdateHARoomHumidity: DwatSen: {self._acOptions['DwatSen']}")
-            self._current_room_humidity = self._acOptions["DwatSen"]
-            _LOGGER.debug(f"{self._name}: UpdateHARoomHumidity: HA room humidity set with device built-in room humidity sensor state: {self._current_room_humidity}%")
-
     def UpdateHAStateToCurrentACState(self):
         self.UpdateHATargetTemperature()
         self.UpdateHAHvacMode()
@@ -479,8 +397,6 @@ class GreeClimate(ClimateEntity):
         self.UpdateHACurrentSwingHorizontalMode()
         self.UpdateHAFanMode()
         self.UpdateHACurrentTemperature()
-        self.UpdateHAOutsideTemperature()
-        self.UpdateHARoomHumidity()
 
     async def DetectOptionalFeatures(self):
         """Probe which optional features the unit has.
@@ -584,18 +500,9 @@ class GreeClimate(ClimateEntity):
         if self._encryption_key:
             return True
 
-        if self.encryption_version == 1:
-            key = await GetDeviceKey(self._mac_addr, self._ip_addr, self._port, max_retries=max_retries)
-            if key:
-                self._encryption_key = key
-                self.CIPHER = AES.new(self._encryption_key, AES.MODE_ECB)
-        elif self.encryption_version == 2:
-            key = await GetDeviceKeyGCM(self._mac_addr, self._ip_addr, self._port, max_retries=max_retries)
-            if key:
-                self._encryption_key = key
-                self.CIPHER = GetGCMCipher(self._encryption_key)
-        else:
-            _LOGGER.error("Encryption version %s is not implemented." % self.encryption_version)
+        key = await GetDeviceKeyGCM(self._mac_addr, self._ip_addr, self._port, max_retries=max_retries)
+        if key:
+            self._encryption_key = key
 
         return bool(self._encryption_key)
 
@@ -736,22 +643,6 @@ class GreeClimate(ClimateEntity):
         )
 
     @property
-    def outside_temperature(self):
-        """Return the outside temperature if available."""
-        if self._has_outside_temp_sensor:
-            _LOGGER.debug(f"{self._name}: outside_temperature() = {self._current_outside_temperature}")
-            return self._current_outside_temperature
-        return None
-
-    @property
-    def room_humidity(self):
-        """Return the current room humidity if available."""
-        if self._has_room_humidity_sensor:
-            _LOGGER.debug(f"{self._name}: room_humidity() = {self._current_room_humidity}")
-            return self._current_room_humidity
-        return None
-
-    @property
     def smart_wind_mode(self):
         """Return the current i Sense airflow mode, if the unit has the feature."""
         if not self._has_smart_wind:
@@ -766,21 +657,6 @@ class GreeClimate(ClimateEntity):
         """Set the i Sense airflow mode."""
         await self.SyncState({"SmartWind": MODES_MAPPING["SmartWind"][mode]})
         self.schedule_update_ha_state()
-
-    @property
-    def extra_state_attributes(self):
-        """Return additional state attributes."""
-        attributes = {}
-
-        if self.outside_temperature is not None:
-            attributes["outside_temperature"] = self.outside_temperature
-            attributes["outside_temperature_unit"] = self._unit_of_measurement
-
-        if self.room_humidity is not None:
-            attributes["room_humidity"] = self.room_humidity
-            attributes["room_humidity_unit"] = "%"
-
-        return attributes if attributes else None
 
     async def async_set_temperature(self, **kwargs):
         """Set new target temperature."""

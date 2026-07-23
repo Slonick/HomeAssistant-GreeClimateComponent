@@ -30,18 +30,13 @@ from homeassistant.const import CONF_HOST, CONF_PORT, CONF_MAC
 from homeassistant.components.network import async_get_ipv4_broadcast_addresses
 
 # Local imports
-from .const import (
-    CONF_ENCRYPTION_VERSION,
-    CONF_ENCRYPTION_KEY,
-    MAX_UNICAST_SCAN_HOSTS,
-)
+from .const import CONF_ENCRYPTION_KEY
 
 _LOGGER = logging.getLogger(__name__)
 
 GCM_IV = b"\x54\x40\x78\x44\x49\x67\x5a\x51\x6c\x5e\x63\x13"
 GCM_ADD = b"qualcomm-test"
-GENERIC_GREE_DEVICE_KEY = "a3K8Bx%2r8Y7#xDh"
-GENERIC_GREE_DEVICE_KEY_GCM = b"{yxAHAY_Lm6pbC/<"
+GENERIC_DEVICE_KEY = b"{yxAHAY_Lm6pbC/<"
 IFF_UP = 0x1
 IFF_LOOPBACK = 0x8
 SIOCGIFFLAGS = 0x8913
@@ -49,7 +44,7 @@ SIOCGIFADDR = 0x8915
 SIOCGIFBRDADDR = 0x8919
 
 
-async def FetchResult(cipher, ip_addr, port, json_data, encryption_version=1, max_retries=8):
+async def FetchResult(cipher, ip_addr, port, json_data, max_retries=8):
     """Send a request to a Gree device and fetch the result, with retries and timeouts."""
 
     _LOGGER.debug(f"Fetching device at: {ip_addr}:{port}, data sent: {json_data})")
@@ -74,9 +69,7 @@ async def FetchResult(cipher, ip_addr, port, json_data, encryption_version=1, ma
             decoded_pack = base64.b64decode(pack)
             decrypted_pack = cipher.decrypt(decoded_pack)
 
-            if encryption_version == 2:
-                tag = received_json["tag"]
-                cipher.verify(base64.b64decode(tag))
+            cipher.verify(base64.b64decode(received_json["tag"]))
 
             # Clean up response data
             decoded_text = decrypted_pack.decode("utf-8")
@@ -106,11 +99,6 @@ async def FetchResult(cipher, ip_addr, port, json_data, encryption_version=1, ma
         # Progressive backoff before retry
         if attempt < max_retries - 1:
             await asyncio.sleep(0.5 + (attempt * 0.3))  # 0.5s, 0.8s, 1.1s, 1.4s, 1.7s, 2.0s, 2.3s
-
-
-def Pad(s):
-    aesBlockSize = 16
-    return s + (aesBlockSize - len(s) % aesBlockSize) * chr(aesBlockSize - len(s) % aesBlockSize)
 
 
 def _get_ioctl_ipv4_address(sock: socket.socket, ifname: str, request: int) -> str | None:
@@ -212,42 +200,19 @@ async def test_connection(config):
 
     ip_addr = config[CONF_HOST]
     port = config[CONF_PORT]
-    encryption_version = config[CONF_ENCRYPTION_VERSION]
     encryption_key = config[CONF_ENCRYPTION_KEY]
 
     mac_addr = config.get(CONF_MAC).encode().replace(b":", b"").replace(b"-", b"").decode("utf-8").lower()
-    if "@" in mac_addr:
-        mac_addr = mac_addr.split("@", 1)[1]
 
-    _LOGGER.debug(f"test_connection: host={ip_addr}, port={port}, mac={mac_addr}, encryption_version={encryption_version}, encryption_key={encryption_key}")
+    _LOGGER.debug(f"test_connection: host={ip_addr}, port={port}, mac={mac_addr}, encryption_key={encryption_key}")
 
     try:
-        if encryption_version == 1:
-            key = await GetDeviceKey(mac_addr, ip_addr, port)
-        else:
-            key = await GetDeviceKeyGCM(mac_addr, ip_addr, port)
+        key = await GetDeviceKeyGCM(mac_addr, ip_addr, port)
         _LOGGER.debug(f"test_connection: Got device key: {key}")
         return key is not None
     except Exception as e:
         _LOGGER.error(f"Gree device at {ip_addr} is unreachable: {type(e).__name__}: {e}", exc_info=True)
         return False
-
-
-async def GetDeviceKey(mac_addr, ip_addr, port, max_retries=8):
-    _LOGGER.debug("Retrieving HVAC encryption key")
-    cipher = AES.new(GENERIC_GREE_DEVICE_KEY.encode("utf8"), AES.MODE_ECB)
-    pack = base64.b64encode(cipher.encrypt(Pad(f'{{"mac":"{mac_addr}","t":"bind","uid":0}}').encode("utf8"))).decode("utf-8")
-    jsonPayloadToSend = f'{{"cid": "app","i": 1,"pack": "{pack}","t":"pack","tcid":"{mac_addr}","uid": 0}}'
-    try:
-        result = await FetchResult(cipher, ip_addr, port, jsonPayloadToSend, max_retries=max_retries)
-        _LOGGER.debug(f"GetDeviceKey: FetchResult: {result}")
-        key = result["key"].encode("utf8")
-    except Exception:
-        _LOGGER.debug("Error getting device encryption key!")
-        return None
-    else:
-        _LOGGER.debug(f"Fetched device encryption key: {str(key)}")
-        return key
 
 
 def GetGCMCipher(key):
@@ -267,10 +232,10 @@ def EncryptGCM(key, plaintext):
 async def GetDeviceKeyGCM(mac_addr, ip_addr, port, max_retries=8):
     _LOGGER.debug("Retrieving HVAC encryption key (GCM)")
     plaintext = f'{{"cid":"{mac_addr}", "mac":"{mac_addr}","t":"bind","uid":0}}'
-    pack, tag = EncryptGCM(GENERIC_GREE_DEVICE_KEY_GCM, plaintext)
+    pack, tag = EncryptGCM(GENERIC_DEVICE_KEY, plaintext)
     jsonPayloadToSend = f'{{"cid": "app","i": 1,"pack": "{pack}","t":"pack","tcid":"{mac_addr}","uid": 0, "tag" : "{tag}"}}'
     try:
-        result = await FetchResult(GetGCMCipher(GENERIC_GREE_DEVICE_KEY_GCM), ip_addr, port, jsonPayloadToSend, encryption_version=2, max_retries=max_retries)
+        result = await FetchResult(GetGCMCipher(GENERIC_DEVICE_KEY), ip_addr, port, jsonPayloadToSend, max_retries=max_retries)
         _LOGGER.debug(f"GetDeviceKeyGCM: FetchResult: {result}")
         key = result["key"].encode("utf8")
     except Exception:
@@ -281,43 +246,8 @@ async def GetDeviceKeyGCM(mac_addr, ip_addr, port, max_retries=8):
         return key
 
 
-def _expand_unicast_targets(networks, hosts, max_hosts):
-    """Expand CIDRs + individual IPs into a deduplicated list of unicast host IPs.
-
-    Raises ValueError if any single network or the combined total exceeds max_hosts.
-    """
-    targets: list[str] = []
-    seen: set[str] = set()
-
-    for cidr in (networks or []):
-        net = ipaddress.ip_network(cidr, strict=False)
-        usable = net.num_addresses - 2 if net.num_addresses > 2 else net.num_addresses
-        if usable > max_hosts:
-            raise ValueError(f"Network {cidr} has {usable} hosts, exceeds limit of {max_hosts}")
-        for host in net.hosts():  # excludes network + broadcast
-            ip_str = str(host)
-            if ip_str not in seen:
-                seen.add(ip_str)
-                targets.append(ip_str)
-
-    for ip_str in (hosts or []):
-        addr = str(ipaddress.ip_address(ip_str))  # validates
-        if addr not in seen:
-            seen.add(addr)
-            targets.append(addr)
-
-    if len(targets) > max_hosts:
-        raise ValueError(f"Total unicast targets ({len(targets)}) exceed limit of {max_hosts}")
-    return targets
-
-
-async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_hosts=None):
-    """Discover Gree devices on the local network using UDP broadcast.
-
-    Optional cross-VLAN unicast scan:
-        extra_networks: list[str] | None -- CIDRs to sweep via unicast (e.g. ["192.168.30.0/24"])
-        extra_hosts:    list[str] | None -- specific IPs to probe (e.g. ["192.168.30.50"])
-    """
+async def discover_gree_devices(hass, timeout=5):
+    """Discover Gree devices on the local network using UDP broadcast."""
     _LOGGER.debug("Starting Gree device discovery...")
 
     BROADCAST_PORT = 7000
@@ -375,32 +305,6 @@ async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_host
                 except Exception as e:
                     _LOGGER.debug(f"Failed to send to {broadcast_addr} via {ifname}: {e}")
 
-        # Cross-VLAN unicast scan
-        if extra_networks or extra_hosts:
-            try:
-                unicast_targets = _expand_unicast_targets(
-                    extra_networks, extra_hosts, MAX_UNICAST_SCAN_HOSTS
-                )
-            except ValueError as e:
-                _LOGGER.error(f"Skipping unicast scan: {e}")
-                unicast_targets = []
-
-            if unicast_targets:
-                unicast_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                unicast_sock.bind(("", 0))  # INADDR_ANY: kernel picks source per-route
-                unicast_sock.setblocking(False)
-                sockets.append((unicast_sock, [], "unicast"))
-                _LOGGER.debug(
-                    f"Sending unicast scan to {len(unicast_targets)} hosts from {unicast_sock.getsockname()}"
-                )
-                for idx, target_ip in enumerate(unicast_targets):
-                    try:
-                        unicast_sock.sendto(DISCOVERY_MESSAGE, (target_ip, BROADCAST_PORT))
-                    except Exception as e:
-                        _LOGGER.debug(f"Unicast send to {target_ip} failed: {e}")
-                    if (idx + 1) % 100 == 0:
-                        await asyncio.sleep(0)  # yield to event loop
-
         _LOGGER.debug("Sent discovery packets, waiting for replies...")
 
         start = time.time()
@@ -434,8 +338,7 @@ async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_host
                             pack_json = None
 
                             try:
-                                cipher = AES.new(GENERIC_GREE_DEVICE_KEY.encode("utf-8"), AES.MODE_ECB)
-                                decrypted_pack = cipher.decrypt(decoded_pack)
+                                decrypted_pack = GetGCMCipher(GENERIC_DEVICE_KEY).decrypt(decoded_pack)
                                 # Remove null bytes and trailing data after last }
                                 decoded_text = decrypted_pack.decode("utf-8", errors="ignore").replace("\x0f", "")
                                 last_brace = decoded_text.rfind("}")
@@ -452,7 +355,6 @@ async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_host
                             # If we successfully decrypted and got device info
                             if pack_json and pack_json.get("t") == "dev":
                                 mac_addr = pack_json.get("mac", "")
-                                sub_cnt = pack_json.get("subCnt", 0)
                                 if not mac_addr:
                                     _LOGGER.debug(f"No MAC address in response from {addr}")
                                     continue
@@ -467,36 +369,11 @@ async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_host
                                     "model": pack_json.get("model", "gree"),
                                     "version": pack_json.get("ver", ""),
                                 }
-                                # If subCnt > 1, fetch sub-device list
-                                if sub_cnt > 1:
-                                    try:
-                                        _LOGGER.debug(f"Fetching sub-devices for {mac_addr} (subCnt={sub_cnt})")
-                                        sub_devices = await get_subunits_list(mac_addr, addr[0], BROADCAST_PORT)
-                                        for sub_device in sub_devices.get("list", []):
-                                            sub_mac = sub_device.get("mac", "")
-                                            if sub_mac:
-                                                sub_device_info = {
-                                                    "name": f"{device_info['name']}_{sub_mac[:4]}",
-                                                    "host": addr[0],
-                                                    "port": BROADCAST_PORT,
-                                                    "mac": f"{sub_mac}@{mac_addr}",
-                                                    "brand": device_info["brand"],
-                                                    "model": sub_device.get("mid", device_info["model"]),
-                                                    "version": device_info["version"],
-                                                }
-                                                device_key = (sub_device_info["host"], sub_device_info["mac"])
-                                                if device_key not in seen_device_ids:
-                                                    seen_device_ids.add(device_key)
-                                                    devices.append(sub_device_info)
-                                                    _LOGGER.debug(f"Discovered sub-device: {sub_device_info}")
-                                    except Exception as e:
-                                        _LOGGER.error(f"Error fetching sub-devices for {mac_addr}: {e}")
-                                else:
-                                    device_key = (device_info["host"], device_info["mac"])
-                                    if device_key not in seen_device_ids:
-                                        seen_device_ids.add(device_key)
-                                        devices.append(device_info)
-                                        _LOGGER.debug(f"Discovered Gree device: {device_info}")
+                                device_key = (device_info["host"], device_info["mac"])
+                                if device_key not in seen_device_ids:
+                                    seen_device_ids.add(device_key)
+                                    devices.append(device_info)
+                                    _LOGGER.debug(f"Discovered Gree device: {device_info}")
                             else:
                                 _LOGGER.debug(f"Invalid or missing device info from {addr}")
                         else:
@@ -512,61 +389,3 @@ async def discover_gree_devices(hass, timeout=5, extra_networks=None, extra_host
 
     _LOGGER.debug(f"Discovery completed, found {len(devices)} devices")
     return devices
-
-
-async def detect_device_encryption(mac_addr, ip_addr, port):
-    """Test which encryption version a device uses for communication."""
-    if "@" in mac_addr:
-        mac_addr = mac_addr.split("@", 1)[1]
-    _LOGGER.debug(f"Detecting encryption version for device {mac_addr} at {ip_addr}:{port}")
-
-    # Test encryption version 1 first
-    try:
-        _LOGGER.debug(f"Testing encryption version 1 for device {mac_addr}")
-        key = await GetDeviceKey(mac_addr, ip_addr, port, max_retries=1)
-        if key:
-            _LOGGER.debug(f"Device {mac_addr} uses encryption version 1")
-            return 1
-    except Exception as e:
-        _LOGGER.debug(f"Encryption version 1 failed for device {mac_addr}: {e}")
-
-    # Test encryption version 2
-    try:
-        _LOGGER.debug(f"Testing encryption version 2 for device {mac_addr}")
-        key = await GetDeviceKeyGCM(mac_addr, ip_addr, port, max_retries=1)
-        if key:
-            _LOGGER.debug(f"Device {mac_addr} uses encryption version 2")
-            return 2
-    except Exception as e:
-        _LOGGER.debug(f"Encryption version 2 failed for device {mac_addr}: {e}")
-
-    _LOGGER.error(f"Could not determine encryption version for device {mac_addr}")
-    return None
-
-async def get_subunits_list(mac_addr, ip_addr, port):
-    """
-    Fetch the list of sub-devices for a Gree device.
-    """
-    try:
-        # Prepare the payload
-        encryption_version = await detect_device_encryption(mac_addr, ip_addr, port)
-
-        json_payload = f'{{"mac":"{mac_addr}", "i":"1"}}'
-        if encryption_version == 1:
-            cipher = AES.new(GENERIC_GREE_DEVICE_KEY.encode("utf8"), AES.MODE_ECB)
-            pack = base64.b64encode(cipher.encrypt(Pad(json_payload).encode("utf8"))).decode("utf-8")
-        else:
-            pack, tag = EncryptGCM(GENERIC_GREE_DEVICE_KEY_GCM, json_payload)
-            cipher = GetGCMCipher(GENERIC_GREE_DEVICE_KEY_GCM)
-
-        jsonPayloadToSend = (
-            f'{{"cid": "app","i": 1,"pack": "{pack}","t":"subList","tcid":"{str(mac_addr)}","uid": 0}}'
-        )
-        # Use FetchResult to send and receive data
-        result = await FetchResult(cipher, ip_addr, port, jsonPayloadToSend, encryption_version=encryption_version)
-        _LOGGER.debug(f"get_subunits_list: FetchResult: {result}")
-
-        return result
-    except Exception as e:
-        _LOGGER.error(f"Error fetching sub-device list for {mac_addr}: {e}")
-        return {"list": []}

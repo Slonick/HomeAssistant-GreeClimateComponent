@@ -49,6 +49,10 @@ async def _set_health(device, value: bool) -> None:
     await device.SyncState({"Health": 1 if value else 0})
 
 
+async def _set_aux_heat(device, value: bool) -> None:
+    await device.SyncState({"AssHt": 1 if value else 0})
+
+
 async def _set_powersave(device, value: bool) -> None:
     await device.SyncState({"SvSt": 1 if value else 0})
 
@@ -59,14 +63,6 @@ async def _set_eightdegheat(device, value: bool) -> None:
 
 async def _set_sleep(device, value: bool) -> None:
     await device.SyncState({"SwhSlp": 1 if value else 0, "SlpMod": 1 if value else 0})
-
-
-async def _set_air(device, value: bool) -> None:
-    await device.SyncState({"Air": 1 if value else 0})
-
-
-async def _set_anti_direct_blow(device, value: bool) -> None:
-    await device.SyncState({"AntiDirectBlow": 1 if value else 0})
 
 
 async def _set_light_sensor(device, value: bool) -> None:
@@ -108,6 +104,14 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         set_fn=_set_health,
     ),
     GreeSwitchEntityDescription(
+        property_key="aux_heat",
+        icon="mdi:heating-coil",
+        value_fn=lambda device: device._acOptions.get("AssHt") == 1,
+        set_fn=_set_aux_heat,
+        exists_fn=lambda description, device: HVACMode.HEAT in device._hvac_modes,
+        available_fn=lambda device: device._hvac_mode == HVACMode.HEAT,
+    ),
+    GreeSwitchEntityDescription(
         property_key="powersave",
         icon="mdi:leaf",
         value_fn=lambda device: device._acOptions.get("SvSt") == 1,
@@ -129,20 +133,6 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         value_fn=lambda device: device._acOptions.get("SwhSlp") == 1 and device._acOptions.get("SlpMod") == 1,
         set_fn=_set_sleep,
         available_fn=lambda device: device._hvac_mode in (HVACMode.COOL, HVACMode.HEAT),
-    ),
-    GreeSwitchEntityDescription(
-        property_key="air",
-        icon="mdi:air-filter",
-        value_fn=lambda device: device._acOptions.get("Air") == 1,
-        set_fn=_set_air,
-    ),
-    GreeSwitchEntityDescription(
-        property_key="anti_direct_blow",
-        icon="mdi:weather-windy",
-        value_fn=lambda device: device._acOptions.get("AntiDirectBlow") == 1,
-        set_fn=_set_anti_direct_blow,
-        exists_fn=lambda description, device: getattr(device, "_has_anti_direct_blow", None) is not False,
-        available_fn=lambda device: getattr(device, "_has_anti_direct_blow", False),
     ),
     GreeSwitchEntityDescription(
         property_key="light_sensor",

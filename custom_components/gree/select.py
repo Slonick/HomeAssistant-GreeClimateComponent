@@ -8,6 +8,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 # Home Assistant imports
+from homeassistant.components.climate import HVACMode
 from homeassistant.components.select import (
     SelectEntity,
     SelectEntityDescription,
@@ -78,7 +79,12 @@ SELECTS: tuple[GreeSelectEntityDescription, ...] = (
         value_fn=lambda device: device.smart_wind_mode,
         set_fn=_set_smart_wind,
         exists_fn=lambda description, device: getattr(device, "_has_smart_wind", None) is not False,
-        available_fn=lambda device: device.available and getattr(device, "_has_smart_wind", False),
+        # The body sensing device only steers the louvers while heating or cooling.
+        available_fn=lambda device: (
+            device.available
+            and getattr(device, "_has_smart_wind", False)
+            and device._hvac_mode in (HVACMode.COOL, HVACMode.HEAT)
+        ),
     ),
 )
 

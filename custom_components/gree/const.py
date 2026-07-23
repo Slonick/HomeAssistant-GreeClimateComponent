@@ -2,17 +2,11 @@ DOMAIN = "gree"
 
 CONF_HVAC_MODES = "hvac_modes"
 CONF_ENCRYPTION_KEY = 'encryption_key'
-CONF_UID = 'uid'
 CONF_FAN_MODES = 'fan_modes'
 CONF_SWING_MODES = 'swing_modes'
 CONF_SWING_HORIZONTAL_MODES = 'swing_horizontal_modes'
-CONF_ENCRYPTION_VERSION = 'encryption_version'
 CONF_DISABLE_AVAILABLE_CHECK  = 'disable_available_check'
 CONF_TEMP_SENSOR_OFFSET = 'temp_sensor_offset'
-CONF_EXTRA_SCAN_NETWORKS = 'extra_scan_networks'
-CONF_EXTRA_SCAN_HOSTS = 'extra_scan_hosts'
-
-MAX_UNICAST_SCAN_HOSTS = 65536
 
 DEFAULT_PORT = 7000
 DEFAULT_TARGET_TEMP_STEP = 1
@@ -29,8 +23,12 @@ TEMSEN_OFFSET = 40
 DEFAULT_HVAC_MODES = ["auto", "cool", "dry", "fan_only", "heat", "off"] 
 
 DEFAULT_FAN_MODES = ["auto", "low", "medium_low", "medium", "medium_high", "high", "turbo", "quiet"]
-DEFAULT_SWING_MODES = ["default", "swing_full", "fixed_upmost", "fixed_middle_up", "fixed_middle", "fixed_middle_low", "fixed_lowest", "swing_downmost", "swing_middle_low", "swing_middle", "swing_middle_up", "swing_upmost"]
-DEFAULT_SWING_HORIZONTAL_MODES = ["default", "swing_full", "fixed_leftmost", "fixed_middle_left", "fixed_middle", "fixed_middle_right", "fixed_rightmost"]
+
+# Louver positions this unit stops at. The remote only steps through part of them, the Gree app
+# exposes all five vertical angles; the horizontal louver additionally splits its two flaps
+# outwards and sweeps the middle region.
+DEFAULT_SWING_MODES = ["default", "swing_full", "fixed_upmost", "fixed_middle_up", "fixed_middle", "fixed_middle_low", "fixed_lowest"]
+DEFAULT_SWING_HORIZONTAL_MODES = ["default", "swing_full", "fixed_leftmost", "fixed_middle_left", "fixed_middle", "fixed_middle_right", "fixed_rightmost", "fixed_outward", "swing_middle"]
 
 # i Sense airflow modes, reported by the unit as SmartWind
 DEFAULT_SMART_WIND_MODES = ["off", "smart", "follow", "avoid", "surround"]
@@ -68,12 +66,7 @@ MODES_MAPPING = {
     "fixed_middle_up" : 3,
     "fixed_middle" : 4,
     "fixed_middle_low" : 5,
-    "fixed_lowest" : 6,
-    "swing_downmost" : 7,
-    "swing_middle_low" : 8,
-    "swing_middle" : 9,
-    "swing_middle_up" : 10,
-    "swing_upmost" : 11
+    "fixed_lowest" : 6
   },
   "SwingLfRig" : {
     "default" : 0,
@@ -82,7 +75,9 @@ MODES_MAPPING = {
     "fixed_middle_left" : 3,
     "fixed_middle" : 4,
     "fixed_middle_right" : 5,
-    "fixed_rightmost" : 6
+    "fixed_rightmost" : 6,
+    "fixed_outward" : 12,
+    "swing_middle" : 13
   },
   "SmartWind" : {
     "off" : 0,
