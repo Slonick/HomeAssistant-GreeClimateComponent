@@ -138,52 +138,41 @@
     },
     "number": {
       "target_temp_step": {
-        "name": "Krok temperatury",
-        "description": "Ustawia co ile stopni ma się zmieniać docelowa temperatura."
+        "name": "Krok temperatury"
       }
     },
     "select": {
       "external_temperature_sensor": {
-        "name": "Zewnętrzny czujnik temperatury",
-        "description": "Wybierz zewnętrzny czujnik temperatury, aby użyć go zamiast wbudowanego. Wybierz 'Brak', aby używać wbudowanego czujnika."
+        "name": "Zewnętrzny czujnik temperatury"
       }
     },
     "switch": {
       "xfan": {
-        "name": "X-Fan",
-        "description": "Włącza lub wyłącza tryb X-Fan który osusza jednostkę wew. podczas wyłączania."
+        "name": "X-Fan"
       },
       "lights": {
-        "name": "Wyświetlacz",
-        "description": "Włącza lub wyłącza wyświetlacz jednostki wewnętrznej."
+        "name": "Wyświetlacz"
       },
       "health": {
-        "name": "Jonizacja",
-        "description": "Włącza lub wyłącza tryb jonizacji i oczyszczania powietrza."
+        "name": "Jonizacja"
       },
       "powersave": {
-        "name": "Oszczędzanie energii",
-        "description": "Włącza lub wyłącza tryb oszczędzania energii. Dostępne tylko w trybie chłodzenia."
+        "name": "Oszczędzanie energii"
       },
       "eightdegheat": {
-        "name": "Grzanie 8°C",
-        "description": "Włącza lub wyłącza tryb grzania 8°C zapobiegający zamarzaniu pomieszczenia. Dostępne tylko w trybie grzania."
+        "name": "Grzanie 8°C"
       },
       "sleep": {
-        "name": "Sen",
-        "description": "Włącza lub wyłącza tryb snu. Dostępne w trybach chłodzenia i grzania."
+        "name": "Sen"
       },
       "auto_xfan": {
-        "name": "Automatyczny X-Fan",
-        "description": "Automatycznie zarządza trybem X-Fan. Gdy jest włączony, X-Fan automatycznie się włączy w trybie chłodzenia i suszenia."
+        "name": "Automatyczny X-Fan"
       },
       "auto_light": {
-        "name": "Automatyczny wyświetlacz",
-        "description": "Automatycznie zarządza wyświetlaczem jednostki wewnętrznej. Włącza go i wyłącza razem z jednostką."
+        "name": "Automatyczny wyświetlacz"
       },
       "light_sensor": {
-        "name": "Czujnik światła",
-        "description": "Włącza lub wyłącza czujnik światła aby dostosować janość wyświetlacza. Wymaga włączonego wyświetlacza."
+        "name": "Czujnik światła"
       }
     }
   }

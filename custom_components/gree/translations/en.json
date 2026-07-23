@@ -67,6 +67,14 @@
           "swing_horizontal_modes": "Horizontal Swing Modes",
           "disable_available_check": "Disable Available Check",
           "temp_sensor_offset": "Temperature Sensor Offset"
+        },
+        "data_description": {
+          "hvac_modes": "Modes offered by the climate entity. Untick what you never use.",
+          "fan_modes": "Fan speeds offered by the climate entity. The unit has five levels plus auto, quiet and turbo.",
+          "swing_modes": "Vertical louver positions. The unit stops at the top, four angles in between and the bottom.",
+          "swing_horizontal_modes": "Horizontal louver positions, including the two flaps pointing apart and the sweep across the middle region.",
+          "disable_available_check": "Keep the entities available even when the unit does not answer. Useful if your network drops UDP packets.",
+          "temp_sensor_offset": "Force the +40 °C offset of the built-in temperature sensor instead of detecting it from the readings."
         }
       }
     }
@@ -170,18 +178,15 @@
     },
     "number": {
       "target_temp_step": {
-        "name": "Temperature Step",
-        "description": "Sets the increment step for adjusting the target temperature."
+        "name": "Temperature Step"
       }
     },
     "select": {
       "external_temperature_sensor": {
-        "name": "External Temperature Sensor",
-        "description": "Select a temperature sensor entity to use instead of the built-in AC sensor. Choose 'None' to use the built-in sensor."
+        "name": "External Temperature Sensor"
       },
       "smart_wind": {
         "name": "i Sense",
-        "description": "Aims the airflow relative to the people in the room. 'Avoid' keeps the air from blowing directly at them, 'Follow' directs it towards them.",
         "state": {
           "off": "Off",
           "smart": "Smart",
@@ -193,44 +198,34 @@
     },
     "switch": {
       "xfan": {
-        "name": "X-Fan",
-        "description": "Enables or disables the X-Fan mode for extra drying when turning off."
+        "name": "X-Fan"
       },
       "lights": {
-        "name": "Lights",
-        "description": "Controls the display lights on the air conditioner unit."
+        "name": "Lights"
       },
       "health": {
-        "name": "Health",
-        "description": "Enables or disables the Health mode for air ionization and purification."
+        "name": "Health"
       },
       "powersave": {
-        "name": "Power Save",
-        "description": "Enables or disables the power saving mode for energy efficiency. Only available in cooling mode."
+        "name": "Power Save"
       },
       "eightdegheat": {
-        "name": "8°C Heat",
-        "description": "Enables or disables the 8°C heating mode for frost protection. Only available in heating mode."
+        "name": "8°C Heat"
       },
       "sleep": {
-        "name": "Sleep",
-        "description": "Enables or disables the sleep mode for comfortable overnight operation. Only available in cooling or heating mode."
+        "name": "Sleep"
       },
       "auto_xfan": {
-        "name": "Auto X-Fan",
-        "description": "Automatically controls the X-Fan mode based on HVAC operations. When enabled, X-Fan will automatically turn on in cooling and dry modes."
+        "name": "Auto X-Fan"
       },
       "auto_light": {
-        "name": "Auto Light",
-        "description": "Automatically controls the display lights based on HVAC operations. When enabled, lights will turn on/off with the AC unit."
+        "name": "Auto Light"
       },
       "light_sensor": {
-        "name": "Light Sensor",
-        "description": "Enables or disables light sensor for automatic brightness. Requires lights to be enabled."
+        "name": "Light Sensor"
       },
       "aux_heat": {
-        "name": "Auxiliary Heat",
-        "description": "Enables the auxiliary electric heater. Only available in heating mode."
+        "name": "Auxiliary Heat"
       }
     }
   }
