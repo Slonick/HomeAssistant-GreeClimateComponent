@@ -225,9 +225,6 @@ class GreeClimate(ClimateEntity):
         self._auto_light = False
         self._auto_xfan = False
 
-        # Initialize beeper control
-        self._beeper_enabled = True  # Default to beeper ON (silent mode OFF)
-
         # helper method to determine TemSen offset
         self._process_temp_sensor = TempOffsetResolver()
 
@@ -269,16 +266,6 @@ class GreeClimate(ClimateEntity):
             if val not in ("", None):
                 filtered_opt.append(f'"{name}"')
                 filtered_p.append(str(val))
-
-        buzzer_command_value = 0 if self._beeper_enabled else 1
-        filtered_opt.append('"Buzzer_ON_OFF"')
-        filtered_p.append(str(buzzer_command_value))
-
-        # Newer firmwares use this, not inverted
-        filtered_opt.append('"BuzzerCtrl"')
-        filtered_p.append(str(1 if self._beeper_enabled else 0))
-
-        _LOGGER.debug(f"{self._name}: Sending command with beeper {'enabled' if self._beeper_enabled else 'disabled'} (buzzer={buzzer_command_value})")
 
         statePackJson = '{"opt":[' + ",".join(filtered_opt) + '],"p":[' + ",".join(filtered_p) + '],"t":"cmd","sub":"' + self._mac_addr + '"}'
 

@@ -52,6 +52,8 @@ Not reachable over the protocol:
   carries it; roughly 160 candidate names were probed. It cannot be controlled from Home Assistant.
 - **Auto clean.** Runs from the remote (MODE + FAN held for 5 seconds, `CL` on the display). The
   `AutoClean` column stays `0` throughout the cycle, so there is nothing to expose.
+- **Beeper.** The unit has no `Buzzer_ON_OFF` or `BuzzerCtrl` column and drops a command that
+  carries only those, so the switch upstream offers could not affect anything here.
 
 Generic support that this model does not need:
 
@@ -78,7 +80,6 @@ schedules temperature better than the unit does.
 | `switch` Sleep | Cooling and heating only |
 | `switch` Lights, Light sensor | Display backlight and its automatic brightness |
 | `switch` Auto X-Fan, Auto Light | Integration-side automation, not unit state |
-| `switch` Beeper | Suppresses the confirmation beep |
 | `number` Temperature step | Step used by the up/down controls |
 
 Fan speeds are `auto`, five levels, `quiet` and `turbo`, matching the remote.

@@ -80,8 +80,12 @@ Louver positions are in `MODES_MAPPING`. The vertical louver stops at `0`–`6`;
 adds `12` (flaps apart) and `13` (sweep across the middle region). The values in between that
 upstream lists for the vertical louver do not exist on this unit.
 
-Two functions the remote has are not reachable over the protocol at all: Breeze (no status column
-carries it) and Auto clean (`AutoClean` stays `0` while the cycle runs).
+Three things are not reachable over the protocol at all: Breeze (no status column carries it),
+Auto clean (`AutoClean` stays `0` while the cycle runs) and the beeper (no `Buzzer_ON_OFF` or
+`BuzzerCtrl` column; a command carrying only those gets no reply).
+
+Every remaining switch and climate option was verified by writing its current value back and
+checking the unit echoes the option — that is how the dead beeper switch was found.
 
 ### Temperature Handling
 

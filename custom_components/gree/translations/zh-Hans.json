@@ -173,9 +173,6 @@
       },
       "light_sensor": {
         "name": "光照传感器"
-      },
-      "beeper": {
-        "name": "蜂鸣器"
       }
     }
   }

@@ -80,10 +80,6 @@ async def _set_auto_light(device, value: bool) -> None:
     setattr(device, "_auto_light", value)
 
 
-async def _set_beeper(device, value: bool) -> None:
-    setattr(device, "_beeper_enabled", value)
-
-
 SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
     GreeSwitchEntityDescription(
         property_key="xfan",
@@ -158,13 +154,6 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         set_fn=_set_auto_light,
         restore_state=True,
         entity_category=EntityCategory.CONFIG,
-    ),
-    GreeSwitchEntityDescription(
-        property_key="beeper",
-        icon="mdi:volume-high",
-        value_fn=lambda device: getattr(device, "_beeper_enabled", True),
-        set_fn=_set_beeper,
-        restore_state=True,
     ),
 )
 

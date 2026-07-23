@@ -173,9 +173,6 @@
       },
       "light_sensor": {
         "name": "Lichtsensor"
-      },
-      "beeper": {
-        "name": "Summer"
       }
     }
   }

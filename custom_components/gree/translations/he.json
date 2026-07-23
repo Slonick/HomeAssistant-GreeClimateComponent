@@ -174,9 +174,6 @@
       },
       "light_sensor": {
         "name": "חיישן אור"
-      },
-      "beeper": {
-        "name": "זמזם"
       }
     }
   }

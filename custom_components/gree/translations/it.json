@@ -173,9 +173,6 @@
       },
       "light_sensor": {
         "name": "Sensore luce"
-      },
-      "beeper": {
-        "name": "Cicalino"
       }
     }
   }

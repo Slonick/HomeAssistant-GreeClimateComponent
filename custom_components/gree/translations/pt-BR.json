@@ -173,9 +173,6 @@
       },
       "light_sensor": {
         "name": "Sensor de Luz"
-      },
-      "beeper": {
-        "name": "Beep"
       }
     }
   }

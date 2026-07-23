@@ -184,10 +184,6 @@
       "light_sensor": {
         "name": "Czujnik światła",
         "description": "Włącza lub wyłącza czujnik światła aby dostosować janość wyświetlacza. Wymaga włączonego wyświetlacza."
-      },
-      "beeper": {
-        "name": "Sygnał dźwiękowy",
-        "description": "Włącza lub wyłącza sygnał dźwiękowy przy obsłudze klimatyzatora. Kiedy jest włączony jednostka wydaje dzwięki przy każdej operacji."
       }
     }
   }

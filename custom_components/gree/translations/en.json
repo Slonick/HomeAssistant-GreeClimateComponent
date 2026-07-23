@@ -228,10 +228,6 @@
         "name": "Light Sensor",
         "description": "Enables or disables light sensor for automatic brightness. Requires lights to be enabled."
       },
-      "beeper": {
-        "name": "Beeper",
-        "description": "Controls the beeper sounds from the air conditioner unit. When enabled, the unit will make sounds for button presses and status changes."
-      },
       "aux_heat": {
         "name": "Auxiliary Heat",
         "description": "Enables the auxiliary electric heater. Only available in heating mode."
