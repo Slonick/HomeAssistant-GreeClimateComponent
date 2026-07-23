@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Nu s-a putut conecta la dispozitiv. Verificați rețeaua și încercați din nou."
+    },
     "title": "Climatizare Gree",
     "description": "Configurează aparatul de aer condiționat Gree",
     "step": {
       "user": {
+        "data": {
+          "name": "Nume",
+          "host": "Adresă IP",
+          "port": "Port",
+          "mac": "Adresă MAC",
+          "encryption_key": "Cheie de criptare",
+          "discovery": "Metodă de configurare"
+        },
+        "title": "Configurare Gree"
+      },
+      "discovery": {
+        "title": "Dispozitive găsite",
+        "data": {
+          "device": "Dispozitiv"
+        }
+      },
+      "detect_encryption": {
+        "title": "Configurare dispozitiv",
+        "data": {
+          "name": "Numele dispozitivului"
+        }
+      },
+      "manual": {
+        "title": "Configurare manuală",
         "data": {
           "name": "Nume",
           "host": "Adresă IP",
@@ -26,6 +52,9 @@
       "encryption_key": "Cheie de criptare",
       "disable_available_check": "Dezactivează verificarea disponibilității",
       "temp_sensor_offset": "Offset senzor temperatură"
+    },
+    "abort": {
+      "already_configured": "Un dispozitiv cu această adresă MAC este deja configurat."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "Moduri balansare orizontală",
           "disable_available_check": "Dezactivează verificarea disponibilității",
           "temp_sensor_offset": "Offset senzor temperatură"
+        },
+        "data_description": {
+          "hvac_modes": "Modurile oferite de entitatea climate.",
+          "fan_modes": "Vitezele ventilatorului: cinci trepte plus auto, silențios și turbo.",
+          "swing_modes": "Pozițiile clapetei verticale.",
+          "swing_horizontal_modes": "Pozițiile clapetei orizontale.",
+          "disable_available_check": "Menține entitățile disponibile chiar dacă unitatea nu răspunde.",
+          "temp_sensor_offset": "Forțează decalajul de +40 °C al senzorului intern în loc să fie detectat."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "Fixat în poziția mijloc-stânga",
         "fixed_middle": "Fixat în poziția de mijloc",
         "fixed_middle_right": "Fixat în poziția mijloc-dreapta",
-        "fixed_rightmost": "Fixat în poziția cea mai la dreapta"
+        "fixed_rightmost": "Fixat în poziția cea mai la dreapta",
+        "fixed_outward": "Clapete depărtate",
+        "swing_middle": "Oscilare în zona centrală"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "Fixat în poziția mijloc-stânga",
               "fixed_middle": "Fixat în poziția de mijloc",
               "fixed_middle_right": "Fixat în poziția mijloc-dreapta",
-              "fixed_rightmost": "Fixat în poziția cea mai la dreapta"
+              "fixed_rightmost": "Fixat în poziția cea mai la dreapta",
+              "fixed_outward": "Clapete depărtate",
+              "swing_middle": "Oscilare în zona centrală"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Senzor temperatură extern"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Oprit",
+          "smart": "Inteligent",
+          "follow": "Către persoană",
+          "avoid": "Departe de persoană",
+          "surround": "În jurul persoanei"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "Senzor lumină"
+      },
+      "aux_heat": {
+        "name": "Încălzire auxiliară"
+      },
+      "skip_unchanged": {
+        "name": "Ignoră comenzile nemodificate"
       }
     }
   }

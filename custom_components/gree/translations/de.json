@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Verbindung zum Gerät nicht möglich. Bitte Netzwerk prüfen und erneut versuchen."
+    },
     "title": "Gree Klima",
     "description": "Konfigurieren Sie Ihre Gree Klimaanlage",
     "step": {
       "user": {
+        "data": {
+          "name": "Name",
+          "host": "IP-Adresse",
+          "port": "Port",
+          "mac": "MAC-Adresse",
+          "encryption_key": "Verschlüsselungsschlüssel",
+          "discovery": "Einrichtungsmethode"
+        },
+        "title": "Gree Klimagerät einrichten"
+      },
+      "discovery": {
+        "title": "Gefundene Geräte",
+        "data": {
+          "device": "Gerät"
+        }
+      },
+      "detect_encryption": {
+        "title": "Gerät konfigurieren",
+        "data": {
+          "name": "Gerätename"
+        }
+      },
+      "manual": {
+        "title": "Manuelle Einrichtung",
         "data": {
           "name": "Name",
           "host": "IP-Adresse",
@@ -26,6 +52,9 @@
       "encryption_key": "Verschlüsselungsschlüssel",
       "disable_available_check": "Verfügbarkeitsprüfung deaktivieren",
       "temp_sensor_offset": "Temperatursensor-Offset"
+    },
+    "abort": {
+      "already_configured": "Ein Gerät mit dieser MAC-Adresse ist bereits eingerichtet."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "Horizontale Swing-Modi",
           "disable_available_check": "Verfügbarkeitsprüfung deaktivieren",
           "temp_sensor_offset": "Temperatursensor-Offset"
+        },
+        "data_description": {
+          "hvac_modes": "Modi, die die Klimaentität anbietet.",
+          "fan_modes": "Lüfterstufen: fünf Stufen plus Auto, Leise und Turbo.",
+          "swing_modes": "Positionen der vertikalen Lamelle.",
+          "swing_horizontal_modes": "Positionen der horizontalen Lamelle.",
+          "disable_available_check": "Entitäten verfügbar halten, auch wenn das Gerät nicht antwortet.",
+          "temp_sensor_offset": "Den +40 °C-Versatz des internen Sensors erzwingen statt ihn zu erkennen."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "Fest in der mittleren-linken Position",
         "fixed_middle": "Fest in der mittleren Position",
         "fixed_middle_right": "Fest in der mittleren-rechten Position",
-        "fixed_rightmost": "Fest in der rechten Position"
+        "fixed_rightmost": "Fest in der rechten Position",
+        "fixed_outward": "Lamellen auseinander",
+        "swing_middle": "Schwenken im mittleren Bereich"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "Fest in der mittleren-linken Position",
               "fixed_middle": "Fest in der mittleren Position",
               "fixed_middle_right": "Fest in der mittleren-rechten Position",
-              "fixed_rightmost": "Fest in der rechten Position"
+              "fixed_rightmost": "Fest in der rechten Position",
+              "fixed_outward": "Lamellen auseinander",
+              "swing_middle": "Schwenken im mittleren Bereich"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Externer Temperatursensor"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Aus",
+          "smart": "Intelligent",
+          "follow": "Zur Person",
+          "avoid": "An der Person vorbei",
+          "surround": "Um die Person herum"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "Lichtsensor"
+      },
+      "aux_heat": {
+        "name": "Zusatzheizung"
+      },
+      "skip_unchanged": {
+        "name": "Unveränderte Befehle überspringen"
       }
     }
   }

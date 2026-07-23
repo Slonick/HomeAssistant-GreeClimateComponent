@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "无法连接到设备。请检查网络连接后重试。"
+    },
     "title": "格力空调",
     "description": "配置您的格力空调",
     "step": {
       "user": {
+        "data": {
+          "name": "名称",
+          "host": "IP 地址",
+          "port": "端口",
+          "mac": "MAC 地址",
+          "encryption_key": "加密密钥",
+          "discovery": "设置方式"
+        },
+        "title": "Gree 空调设置"
+      },
+      "discovery": {
+        "title": "已发现的设备",
+        "data": {
+          "device": "设备"
+        }
+      },
+      "detect_encryption": {
+        "title": "配置设备",
+        "data": {
+          "name": "设备名称"
+        }
+      },
+      "manual": {
+        "title": "手动设置",
         "data": {
           "name": "名称",
           "host": "IP 地址",
@@ -26,6 +52,9 @@
       "encryption_key": "加密密钥",
       "disable_available_check": "禁用可用性检查",
       "temp_sensor_offset": "温度传感器偏移"
+    },
+    "abort": {
+      "already_configured": "使用该 MAC 地址的设备已配置。"
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "水平扫风模式",
           "disable_available_check": "禁用可用性检查",
           "temp_sensor_offset": "温度传感器偏移"
+        },
+        "data_description": {
+          "hvac_modes": "空调实体提供的模式。",
+          "fan_modes": "风速档位：五档，另加自动、静音和强劲。",
+          "swing_modes": "上下导风板的位置。",
+          "swing_horizontal_modes": "左右导风板的位置。",
+          "disable_available_check": "即使机组无响应也保持实体可用。",
+          "temp_sensor_offset": "强制使用内置温度传感器的 +40 °C 偏移，而不是自动判断。"
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "固定在中左位置",
         "fixed_middle": "固定在中间位置",
         "fixed_middle_right": "固定在中右位置",
-        "fixed_rightmost": "固定在最右位置"
+        "fixed_rightmost": "固定在最右位置",
+        "fixed_outward": "导风板分开",
+        "swing_middle": "中间区域摆动"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "固定在中左位置",
               "fixed_middle": "固定在中间位置",
               "fixed_middle_right": "固定在中右位置",
-              "fixed_rightmost": "固定在最右位置"
+              "fixed_rightmost": "固定在最右位置",
+              "fixed_outward": "导风板分开",
+              "swing_middle": "中间区域摆动"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "外部温度传感器"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "关闭",
+          "smart": "智能",
+          "follow": "对人送风",
+          "avoid": "避人送风",
+          "surround": "环绕送风"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "光照传感器"
+      },
+      "aux_heat": {
+        "name": "电辅热"
+      },
+      "skip_unchanged": {
+        "name": "跳过重复指令"
       }
     }
   }

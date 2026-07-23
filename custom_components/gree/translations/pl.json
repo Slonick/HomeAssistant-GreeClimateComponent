@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Nie można połączyć się z urządzeniem. Sprawdź sieć i spróbuj ponownie."
+    },
     "title": "Klimatyzajca Gree",
     "description": "Skonfiguruj swój klimatyzator Gree",
     "step": {
       "user": {
+        "data": {
+          "name": "Nazwa",
+          "host": "Adres IP",
+          "port": "Port",
+          "mac": "Adres MAC",
+          "encryption_key": "Klucz szyfrowania",
+          "discovery": "Metoda konfiguracji"
+        },
+        "title": "Konfiguracja Gree"
+      },
+      "discovery": {
+        "title": "Znalezione urządzenia",
+        "data": {
+          "device": "Urządzenie"
+        }
+      },
+      "detect_encryption": {
+        "title": "Konfiguracja urządzenia",
+        "data": {
+          "name": "Nazwa urządzenia"
+        }
+      },
+      "manual": {
+        "title": "Konfiguracja ręczna",
         "data": {
           "name": "Nazwa",
           "host": "Adres IP",
@@ -26,6 +52,9 @@
       "encryption_key": "Klucz szyfrowania",
       "disable_available_check": "Wyłącz sprawdzanie dostępności",
       "temp_sensor_offset": "Offset czujnika temperatury"
+    },
+    "abort": {
+      "already_configured": "Urządzenie o tym adresie MAC jest już skonfigurowane."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "Tryby poziomego ruchu",
           "disable_available_check": "Wyłącz sprawdzanie dostępności",
           "temp_sensor_offset": "Offset czujnika temperatury"
+        },
+        "data_description": {
+          "hvac_modes": "Tryby oferowane przez encję climate.",
+          "fan_modes": "Prędkości wentylatora: pięć stopni oraz auto, cichy i turbo.",
+          "swing_modes": "Położenia kierownicy pionowej.",
+          "swing_horizontal_modes": "Położenia kierownicy poziomej.",
+          "disable_available_check": "Utrzymuj encje dostępne, nawet gdy jednostka nie odpowiada.",
+          "temp_sensor_offset": "Wymuś przesunięcie +40 °C czujnika wbudowanego zamiast wykrywania."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "Stały w pozycji środkowo-lewej",
         "fixed_middle": "Stały w pozycji środkowej",
         "fixed_middle_right": "Stały w pozycji środkowo-prawej",
-        "fixed_rightmost": "Stały w skrajnie prawej pozycji"
+        "fixed_rightmost": "Stały w skrajnie prawej pozycji",
+        "fixed_outward": "Kierownice na zewnątrz",
+        "swing_middle": "Wahanie w strefie środkowej"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "Stały w pozycji środkowo-lewej",
               "fixed_middle": "Stały w pozycji środkowej",
               "fixed_middle_right": "Stały w pozycji środkowo-prawej",
-              "fixed_rightmost": "Stały w skrajnie prawej pozycji"
+              "fixed_rightmost": "Stały w skrajnie prawej pozycji",
+              "fixed_outward": "Kierownice na zewnątrz",
+              "swing_middle": "Wahanie w strefie środkowej"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Zewnętrzny czujnik temperatury"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Wyłączone",
+          "smart": "Inteligentny",
+          "follow": "W stronę osoby",
+          "avoid": "Z dala od osoby",
+          "surround": "Wokół osoby"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "Czujnik światła"
+      },
+      "aux_heat": {
+        "name": "Grzałka pomocnicza"
+      },
+      "skip_unchanged": {
+        "name": "Pomijaj niezmienione polecenia"
       }
     }
   }

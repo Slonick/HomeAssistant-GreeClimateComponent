@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Impossibile connettersi al dispositivo. Controlla la rete e riprova."
+    },
     "title": "Clima Gree",
     "description": "Configura il tuo condizionatore Gree",
     "step": {
       "user": {
+        "data": {
+          "name": "Nome",
+          "host": "Indirizzo IP",
+          "port": "Porta",
+          "mac": "Indirizzo MAC",
+          "encryption_key": "Chiave di crittografia",
+          "discovery": "Metodo di configurazione"
+        },
+        "title": "Configurazione Gree"
+      },
+      "discovery": {
+        "title": "Dispositivi trovati",
+        "data": {
+          "device": "Dispositivo"
+        }
+      },
+      "detect_encryption": {
+        "title": "Configura dispositivo",
+        "data": {
+          "name": "Nome del dispositivo"
+        }
+      },
+      "manual": {
+        "title": "Configurazione manuale",
         "data": {
           "name": "Nome",
           "host": "Indirizzo IP",
@@ -26,6 +52,9 @@
       "encryption_key": "Chiave di crittografia",
       "disable_available_check": "Disabilita controllo disponibilità",
       "temp_sensor_offset": "Offset sensore temperatura"
+    },
+    "abort": {
+      "already_configured": "Un dispositivo con questo indirizzo MAC è già configurato."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "Modalità oscillazione orizzontale",
           "disable_available_check": "Disabilita controllo disponibilità",
           "temp_sensor_offset": "Offset sensore temperatura"
+        },
+        "data_description": {
+          "hvac_modes": "Modalità offerte dall'entità climate.",
+          "fan_modes": "Velocità del ventilatore: cinque livelli più auto, silenzioso e turbo.",
+          "swing_modes": "Posizioni dell'aletta verticale.",
+          "swing_horizontal_modes": "Posizioni dell'aletta orizzontale.",
+          "disable_available_check": "Mantieni le entità disponibili anche quando l'unità non risponde.",
+          "temp_sensor_offset": "Forza lo scarto di +40 °C del sensore interno invece di rilevarlo."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "Fisso in posizione medio-sinistra",
         "fixed_middle": "Fisso in posizione centrale",
         "fixed_middle_right": "Fisso in posizione medio-destra",
-        "fixed_rightmost": "Fisso in posizione più a destra"
+        "fixed_rightmost": "Fisso in posizione più a destra",
+        "fixed_outward": "Alette divaricate",
+        "swing_middle": "Oscillazione nella zona centrale"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "Fisso in posizione medio-sinistra",
               "fixed_middle": "Fisso in posizione centrale",
               "fixed_middle_right": "Fisso in posizione medio-destra",
-              "fixed_rightmost": "Fisso in posizione più a destra"
+              "fixed_rightmost": "Fisso in posizione più a destra",
+              "fixed_outward": "Alette divaricate",
+              "swing_middle": "Oscillazione nella zona centrale"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Sensore temperatura esterno"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Spento",
+          "smart": "Intelligente",
+          "follow": "Verso la persona",
+          "avoid": "Lontano dalla persona",
+          "surround": "Attorno alla persona"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "Sensore luce"
+      },
+      "aux_heat": {
+        "name": "Riscaldamento ausiliario"
+      },
+      "skip_unchanged": {
+        "name": "Ignora comandi invariati"
       }
     }
   }

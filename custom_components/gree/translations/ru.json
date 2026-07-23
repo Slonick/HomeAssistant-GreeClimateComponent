@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Не удалось подключиться к устройству. Проверьте сеть и попробуйте снова."
+    },
     "title": "Климат Gree",
     "description": "Настройте ваш кондиционер Gree",
     "step": {
       "user": {
+        "data": {
+          "name": "Имя",
+          "host": "IP-адрес",
+          "port": "Порт",
+          "mac": "MAC-адрес",
+          "encryption_key": "Ключ шифрования",
+          "discovery": "Способ настройки"
+        },
+        "title": "Настройка Gree"
+      },
+      "discovery": {
+        "title": "Найденные устройства",
+        "data": {
+          "device": "Устройство"
+        }
+      },
+      "detect_encryption": {
+        "title": "Настройка устройства",
+        "data": {
+          "name": "Имя устройства"
+        }
+      },
+      "manual": {
+        "title": "Ручная настройка",
         "data": {
           "name": "Имя",
           "host": "IP-адрес",
@@ -26,6 +52,9 @@
       "encryption_key": "Ключ шифрования",
       "disable_available_check": "Отключить проверку доступности",
       "temp_sensor_offset": "Смещение датчика температуры"
+    },
+    "abort": {
+      "already_configured": "Устройство с этим MAC-адресом уже настроено."
     }
   },
   "options": {

@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "לא ניתן להתחבר למכשיר. בדוק את החיבור לרשת ונסה שוב."
+    },
     "title": "מזגן Gree",
     "description": "הגדר את מזגן ה-Gree שלך",
     "step": {
       "user": {
+        "data": {
+          "name": "שם",
+          "host": "כתובת IP",
+          "port": "פורט",
+          "mac": "כתובת MAC",
+          "encryption_key": "מפתח הצפנה",
+          "discovery": "שיטת הגדרה"
+        },
+        "title": "הגדרת מזגן Gree"
+      },
+      "discovery": {
+        "title": "מכשירים שנמצאו",
+        "data": {
+          "device": "מכשיר"
+        }
+      },
+      "detect_encryption": {
+        "title": "הגדרת מכשיר",
+        "data": {
+          "name": "שם המכשיר"
+        }
+      },
+      "manual": {
+        "title": "הגדרה ידנית",
         "data": {
           "name": "שם",
           "host": "כתובת IP",
@@ -26,6 +52,9 @@
       "encryption_key": "מפתח הצפנה",
       "disable_available_check": "השבת בדיקת זמינות",
       "temp_sensor_offset": "היסט חיישן טמפרטורה"
+    },
+    "abort": {
+      "already_configured": "מכשיר עם כתובת MAC זו כבר מוגדר."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "מצבי נדנוד אופקי",
           "disable_available_check": "השבת בדיקת זמינות",
           "temp_sensor_offset": "היסט חיישן טמפרטורה"
+        },
+        "data_description": {
+          "hvac_modes": "המצבים שישות האקלים מציעה.",
+          "fan_modes": "מהירויות המאוורר: חמש דרגות ועוד אוטומטי, שקט וטורבו.",
+          "swing_modes": "מיקומי התריס האנכי.",
+          "swing_horizontal_modes": "מיקומי התריס האופקי.",
+          "disable_available_check": "להשאיר ישויות זמינות גם כשהמזגן אינו משיב.",
+          "temp_sensor_offset": "לכפות היסט של ‎+40°C‎ לחיישן הפנימי במקום לזהות אותו."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "קבוע במיקום אמצעי-שמאלי",
         "fixed_middle": "קבוע במיקום האמצעי",
         "fixed_middle_right": "קבוע במיקום אמצעי-ימני",
-        "fixed_rightmost": "קבוע במיקום הימני ביותר"
+        "fixed_rightmost": "קבוע במיקום הימני ביותר",
+        "fixed_outward": "תריסים לצדדים",
+        "swing_middle": "תנודה באזור המרכזי"
       }
     }
   },
@@ -131,7 +170,9 @@
               "fixed_middle_left": "קבוע במיקום אמצעי-שמאלי",
               "fixed_middle": "קבוע במיקום האמצעי",
               "fixed_middle_right": "קבוע במיקום אמצעי-ימני",
-              "fixed_rightmost": "קבוע במיקום הימני ביותר"
+              "fixed_rightmost": "קבוע במיקום הימני ביותר",
+              "fixed_outward": "תריסים לצדדים",
+              "swing_middle": "תנודה באזור המרכזי"
             }
           }
         }
@@ -145,6 +186,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "חיישן טמפרטורה חיצוני"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "כבוי",
+          "smart": "חכם",
+          "follow": "אל האדם",
+          "avoid": "הרחק מהאדם",
+          "surround": "מסביב לאדם"
+        }
       }
     },
     "switch": {
@@ -168,6 +219,12 @@
       },
       "light_sensor": {
         "name": "חיישן אור"
+      },
+      "aux_heat": {
+        "name": "חימום עזר"
+      },
+      "skip_unchanged": {
+        "name": "דלג על פקודות ללא שינוי"
       }
     }
   }

@@ -1,10 +1,36 @@
 {
   "config": {
-    "error": {},
+    "error": {
+      "cannot_connect": "Nem sikerült csatlakozni az eszközhöz. Ellenőrizze a hálózatot, majd próbálja újra."
+    },
     "title": "Gree Klíma",
     "description": "Állítsa be a Gree légkondicionálóját",
     "step": {
       "user": {
+        "data": {
+          "name": "Név",
+          "host": "IP-cím",
+          "port": "Port",
+          "mac": "MAC-cím",
+          "encryption_key": "Titkosítási kulcs",
+          "discovery": "Beállítási mód"
+        },
+        "title": "Gree klíma beállítása"
+      },
+      "discovery": {
+        "title": "Megtalált eszközök",
+        "data": {
+          "device": "Eszköz"
+        }
+      },
+      "detect_encryption": {
+        "title": "Eszköz konfigurálása",
+        "data": {
+          "name": "Eszköz neve"
+        }
+      },
+      "manual": {
+        "title": "Kézi beállítás",
         "data": {
           "name": "Név",
           "host": "IP-cím",
@@ -26,6 +52,9 @@
       "encryption_key": "Titkosítási kulcs",
       "disable_available_check": "Elérhetőség ellenőrzésének letiltása",
       "temp_sensor_offset": "Hőmérséklet érzékelő eltolás"
+    },
+    "abort": {
+      "already_configured": "Ilyen MAC-címmel már van beállított eszköz."
     }
   },
   "options": {
@@ -39,6 +68,14 @@
           "swing_horizontal_modes": "Vízszintes lengési módok",
           "disable_available_check": "Elérhetőség ellenőrzésének letiltása",
           "temp_sensor_offset": "Hőmérséklet érzékelő eltolás"
+        },
+        "data_description": {
+          "hvac_modes": "A klímaentitás által kínált módok.",
+          "fan_modes": "Ventilátorfokozatok: öt fokozat, valamint auto, csendes és turbó.",
+          "swing_modes": "A függőleges lamella állásai.",
+          "swing_horizontal_modes": "A vízszintes lamella állásai.",
+          "disable_available_check": "Az entitások maradjanak elérhetők akkor is, ha az egység nem válaszol.",
+          "temp_sensor_offset": "A beépített érzékelő +40 °C eltolásának kényszerítése felismerés helyett."
         }
       }
     }
@@ -91,7 +128,9 @@
         "fixed_middle_left": "Rögzített közép-bal pozíció",
         "fixed_middle": "Rögzített középső pozíció",
         "fixed_middle_right": "Rögzített közép-jobb pozíció",
-        "fixed_rightmost": "Rögzített jobb szélső pozíció"
+        "fixed_rightmost": "Rögzített jobb szélső pozíció",
+        "fixed_outward": "Lamellák szétnyitva",
+        "swing_middle": "Lengés a középső tartományban"
       }
     }
   },
@@ -130,7 +169,9 @@
               "fixed_middle_left": "Rögzített közép-bal pozíció",
               "fixed_middle": "Rögzített középső pozíció",
               "fixed_middle_right": "Rögzített közép-jobb pozíció",
-              "fixed_rightmost": "Rögzített jobb szélső pozíció"
+              "fixed_rightmost": "Rögzített jobb szélső pozíció",
+              "fixed_outward": "Lamellák szétnyitva",
+              "swing_middle": "Lengés a középső tartományban"
             }
           }
         }
@@ -144,6 +185,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Külső hőmérséklet érzékelő"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Ki",
+          "smart": "Intelligens",
+          "follow": "Személy felé",
+          "avoid": "Személy mellett",
+          "surround": "Személy körül"
+        }
       }
     },
     "switch": {
@@ -167,6 +218,12 @@
       },
       "light_sensor": {
         "name": "Fényérzékelő"
+      },
+      "aux_heat": {
+        "name": "Kiegészítő fűtés"
+      },
+      "skip_unchanged": {
+        "name": "Változatlan parancsok kihagyása"
       }
     }
   }
