@@ -34,6 +34,9 @@ connects directly during initial setup and then works through Gree's servers.
   the column with a constant `0`.
 - **Discovery.** Replies were only decrypted with the v1 ECB key, so a unit that speaks GCM — this
   one does — was silently skipped.
+- **Repeated commands.** A request for a value the unit already holds is dropped instead of
+  being sent. The unit beeps every time it accepts a command and offers no way to silence it,
+  so an automation that reasserts a setting on a schedule used to beep on every run.
 - **Entity creation.** Detection now runs once before the platforms are set up and the platforms
   honour `exists_fn`, so entities are no longer created for hardware the unit does not have. When
   the unit is unreachable at setup, detection stays undecided and every entity is created, as before.

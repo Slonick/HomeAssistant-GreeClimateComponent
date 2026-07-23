@@ -70,6 +70,9 @@ that as missing hardware is exactly the bug this replaced. Room humidity is the 
 
 If the unit is unreachable at setup, detection stays `None` and every entity is created.
 
+`SyncState()` drops a request whose values the unit already holds. The unit beeps on every
+command it accepts and has no buzzer control, so resending an unchanged setting is audible.
+
 ### Device State
 
 `GreeClimate._acOptions` tracks: `Pow`, `Mod`, `SetTem`, `WdSpd`, `Blo`, `SwhSlp`, `Lig`,

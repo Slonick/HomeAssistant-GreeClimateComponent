@@ -437,6 +437,13 @@ class GreeClimate(ClimateEntity):
             # Set latest status from device
             self._acOptions = self.SetAcOptions(self._acOptions, optionsToFetch, currentValues)
 
+            # The unit beeps every time it accepts a command and cannot be told not to, so
+            # drop a request that asks for what it already holds. Automations that reassert a
+            # setting on a schedule would otherwise beep on every run.
+            if acOptions and all(self._acOptions.get(key) == value for key, value in acOptions.items()):
+                _LOGGER.debug(f"{self._name}: Device already holds {acOptions}, not sending a command")
+                acOptions = {}
+
             # Overwrite status with our choices
             if not (acOptions == {}):
                 self._acOptions = self.SetAcOptions(self._acOptions, acOptions)
