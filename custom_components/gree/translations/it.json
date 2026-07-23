@@ -153,9 +153,6 @@
       "lights": {
         "name": "Luci"
       },
-      "health": {
-        "name": "Salute"
-      },
       "powersave": {
         "name": "Risparmio energetico"
       },

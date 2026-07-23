@@ -204,7 +204,6 @@ class GreeClimate(ClimateEntity):
             "SetTem": None,
             "WdSpd": None,
             "Blo": None,
-            "Health": None,
             "SwhSlp": None,
             "Lig": None,
             "SwingLfRig": None,
@@ -219,7 +218,7 @@ class GreeClimate(ClimateEntity):
             "SlpMod": None,
             "AssHt": None,
         }
-        self._optionsToFetch = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AssHt"]
+        self._optionsToFetch = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AssHt"]
 
         # Initialize auto switches
         self._auto_light = False
@@ -254,7 +253,7 @@ class GreeClimate(ClimateEntity):
         return acOptions
 
     async def SendStateToAc(self):
-        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "LigSen", "SmartWind", "AssHt"]
+        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Blo", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "LigSen", "SmartWind", "AssHt"]
 
         # Collect values from _acOptions
         p_values = [self._acOptions.get(k) for k in opt_list]

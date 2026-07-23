@@ -153,9 +153,6 @@
       "lights": {
         "name": "灯光"
       },
-      "health": {
-        "name": "健康模式"
-      },
       "powersave": {
         "name": "节能模式"
       },

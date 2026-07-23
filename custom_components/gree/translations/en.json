@@ -203,9 +203,6 @@
       "lights": {
         "name": "Lights"
       },
-      "health": {
-        "name": "Health"
-      },
       "powersave": {
         "name": "Power Save"
       },

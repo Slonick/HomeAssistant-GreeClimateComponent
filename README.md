@@ -44,6 +44,9 @@ Not present on this model, confirmed against the unit and the owner's manual:
 
 - Anti direct blow, outside temperature sensor, room humidity sensor — the unit answers those
   status columns with an empty result. The whole `sensor` platform went with them.
+- Health. The firmware accepts the `Health` flag and the remote button toggles it, but the
+  service manual for this model states the series has no health function and no ioniser appears
+  in either parts list. The flag drives nothing.
 - Fresh air (`Air`) — no such control on the remote or in the app.
 
 Not reachable over the protocol:
@@ -73,7 +76,6 @@ schedules temperature better than the unit does.
 | `select` i Sense | Cooling and heating only |
 | `select` external temperature sensor | Use another sensor instead of the built-in one |
 | `switch` X-Fan | Dries the indoor unit after shutdown |
-| `switch` Health | Ionisation |
 | `switch` Auxiliary heat | Heating only |
 | `switch` Power save | Cooling only |
 | `switch` 8 °C heat | Heating only |

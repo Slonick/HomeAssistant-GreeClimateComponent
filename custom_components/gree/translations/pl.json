@@ -153,9 +153,6 @@
       "lights": {
         "name": "Wyświetlacz"
       },
-      "health": {
-        "name": "Jonizacja"
-      },
       "powersave": {
         "name": "Oszczędzanie energii"
       },

@@ -153,9 +153,6 @@
       "lights": {
         "name": "Licht"
       },
-      "health": {
-        "name": "Gesundheit"
-      },
       "powersave": {
         "name": "Energiespar"
       },

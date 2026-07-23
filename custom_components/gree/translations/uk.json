@@ -203,9 +203,6 @@
       "lights": {
         "name": "Підсвічування"
       },
-      "health": {
-        "name": "Health"
-      },
       "aux_heat": {
         "name": "Додатковий нагрів"
       },

@@ -45,10 +45,6 @@ async def _set_lights(device, value: bool) -> None:
     await device.SyncState({"Lig": 1 if value else 0})
 
 
-async def _set_health(device, value: bool) -> None:
-    await device.SyncState({"Health": 1 if value else 0})
-
-
 async def _set_aux_heat(device, value: bool) -> None:
     await device.SyncState({"AssHt": 1 if value else 0})
 
@@ -92,12 +88,6 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         icon="mdi:lightbulb",
         value_fn=lambda device: device._acOptions.get("Lig") == 1,
         set_fn=_set_lights,
-    ),
-    GreeSwitchEntityDescription(
-        property_key="health",
-        icon="mdi:shield-check",
-        value_fn=lambda device: device._acOptions.get("Health") == 1,
-        set_fn=_set_health,
     ),
     GreeSwitchEntityDescription(
         property_key="aux_heat",

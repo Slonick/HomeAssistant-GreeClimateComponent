@@ -153,9 +153,6 @@
       "lights": {
         "name": "Lumini"
       },
-      "health": {
-        "name": "Sănătate"
-      },
       "powersave": {
         "name": "Economisire energie"
       },

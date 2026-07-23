@@ -153,9 +153,6 @@
       "lights": {
         "name": "Fény"
       },
-      "health": {
-        "name": "Egészség"
-      },
       "powersave": {
         "name": "Energiatakarékosság"
       },
