@@ -104,6 +104,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     device = await create_gree_device(hass, combined_data)
 
+    # Probe the optional hardware before the platforms are set up, so that entities are only
+    # created for features the unit actually has. When the unit cannot be reached right now the
+    # detection stays undecided and the platforms fall back to creating every entity, so keep
+    # the retries low here rather than holding up startup for a unit that is offline.
+    if await device.EnsureEncryptionKey(max_retries=2):
+        await device.DetectOptionalFeatures()
+
     # Store both the config data and the device instance
     hass.data[DOMAIN][entry.entry_id] = {
         "config": combined_data,

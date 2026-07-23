@@ -200,6 +200,17 @@
       "external_temperature_sensor": {
         "name": "External Temperature Sensor",
         "description": "Select a temperature sensor entity to use instead of the built-in AC sensor. Choose 'None' to use the built-in sensor."
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "description": "Aims the airflow relative to the people in the room. 'Avoid' keeps the air from blowing directly at them, 'Follow' directs it towards them.",
+        "state": {
+          "off": "Off",
+          "smart": "Smart",
+          "follow": "Follow",
+          "avoid": "Avoid",
+          "surround": "Surround"
+        }
       }
     },
     "sensor": {

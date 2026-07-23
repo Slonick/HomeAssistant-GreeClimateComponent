@@ -19,6 +19,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 # Local imports
+from .const import DEFAULT_SMART_WIND_MODES, DOMAIN
 from .entity import GreeEntity, GreeEntityDescription
 
 _LOGGER = logging.getLogger(__name__)
@@ -51,16 +52,33 @@ def get_temperature_sensor_options(hass: HomeAssistant) -> list[str]:
     return options
 
 
+async def _set_external_temperature_sensor(device, value: str) -> None:
+    device._external_temperature_sensor = None if value == "None" else value
+
+
+async def _set_smart_wind(device, value: str) -> None:
+    await device.async_set_smart_wind_mode(value)
+
+
 SELECTS: tuple[GreeSelectEntityDescription, ...] = (
     GreeSelectEntityDescription(
         property_key="external_temperature_sensor",
         icon="mdi:thermometer-lines",
         options=[],  # Will be populated dynamically
-        value_fn=lambda device: getattr(device, "_external_temperature_sensor", "None"),
-        set_fn=lambda device, value: setattr(device, "_external_temperature_sensor", None if value == "None" else value),
+        value_fn=lambda device: getattr(device, "_external_temperature_sensor", None) or "None",
+        set_fn=_set_external_temperature_sensor,
         entity_category=EntityCategory.CONFIG,
         restore_state=True,
         options_fn=lambda hass: get_temperature_sensor_options(hass),
+    ),
+    GreeSelectEntityDescription(
+        property_key="smart_wind",
+        icon="mdi:air-conditioner",
+        options=DEFAULT_SMART_WIND_MODES,
+        value_fn=lambda device: device.smart_wind_mode,
+        set_fn=_set_smart_wind,
+        exists_fn=lambda description, device: getattr(device, "_has_smart_wind", None) is not False,
+        available_fn=lambda device: device.available and getattr(device, "_has_smart_wind", False),
     ),
 )
 
@@ -71,7 +89,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Gree select entities based on a config entry."""
-    async_add_entities(GreeSelectEntity(hass, entry, description) for description in SELECTS)
+    device = hass.data[DOMAIN][entry.entry_id]["device"]
+    async_add_entities(
+        GreeSelectEntity(hass, entry, description)
+        for description in SELECTS
+        if description.exists_fn(description, device)
+    )
 
 
 class GreeSelectEntity(GreeEntity, SelectEntity, RestoreEntity):
@@ -82,13 +105,11 @@ class GreeSelectEntity(GreeEntity, SelectEntity, RestoreEntity):
     def __init__(self, hass: HomeAssistant, entry, description: GreeSelectEntityDescription) -> None:
         super().__init__(hass, entry, description)
         self._hass = hass
-        # Initialize with no external sensor configured
-        self._device._external_temperature_sensor = None
         # Set up options dynamically
         if description.options_fn:
             self._attr_options = description.options_fn(hass)
         else:
-            self._attr_options = description.options or ["None"]
+            self._attr_options = list(description.options or ["None"])
 
     async def async_added_to_hass(self) -> None:
         """Restore state when entity is added to hass."""
@@ -102,16 +123,15 @@ class GreeSelectEntity(GreeEntity, SelectEntity, RestoreEntity):
         if self.entity_description.restore_state:
             restored = await self.async_get_last_state()
             if restored and self.entity_description.set_fn:
-                self.entity_description.set_fn(self._device, restored.state)
+                await self.entity_description.set_fn(self._device, restored.state)
                 _LOGGER.debug("Restored %s state: %s", self.entity_id, restored.state)
 
     @property
-    def current_option(self) -> str:
+    def current_option(self) -> str | None:
         """Return the current selected option."""
         if self.entity_description.value_fn:
-            value = self.entity_description.value_fn(self._device)
-            return value or "None"
-        return "None"
+            return self.entity_description.value_fn(self._device)
+        return None
 
     async def async_select_option(self, option: str) -> None:
         """Select an option."""
@@ -120,7 +140,7 @@ class GreeSelectEntity(GreeEntity, SelectEntity, RestoreEntity):
             return
 
         if self.entity_description.set_fn:
-            self.entity_description.set_fn(self._device, option)
+            await self.entity_description.set_fn(self._device, option)
             self.async_write_ha_state()
             _LOGGER.info("Selected %s: %s", self.entity_description.property_key, option)
 
@@ -132,8 +152,3 @@ class GreeSelectEntity(GreeEntity, SelectEntity, RestoreEntity):
             if new_options != self._attr_options:
                 self._attr_options = new_options
                 _LOGGER.debug("Updated temperature sensor options: %s", self._attr_options)
-
-    @property
-    def available(self) -> bool:
-        """Return if entity is available."""
-        return True

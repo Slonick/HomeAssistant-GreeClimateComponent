@@ -32,6 +32,9 @@ DEFAULT_FAN_MODES = ["auto", "low", "medium_low", "medium", "medium_high", "high
 DEFAULT_SWING_MODES = ["default", "swing_full", "fixed_upmost", "fixed_middle_up", "fixed_middle", "fixed_middle_low", "fixed_lowest", "swing_downmost", "swing_middle_low", "swing_middle", "swing_middle_up", "swing_upmost"]
 DEFAULT_SWING_HORIZONTAL_MODES = ["default", "swing_full", "fixed_leftmost", "fixed_middle_left", "fixed_middle", "fixed_middle_right", "fixed_rightmost"]
 
+# i Sense airflow modes, reported by the unit as SmartWind
+DEFAULT_SMART_WIND_MODES = ["off", "smart", "follow", "avoid", "surround"]
+
 # Keys that can be updated via the options flow
 OPTION_KEYS = {
     CONF_HVAC_MODES,
@@ -80,5 +83,12 @@ MODES_MAPPING = {
     "fixed_middle" : 4,
     "fixed_middle_right" : 5,
     "fixed_rightmost" : 6
+  },
+  "SmartWind" : {
+    "off" : 0,
+    "smart" : 1,
+    "follow" : 2,
+    "avoid" : 3,
+    "surround" : 4
   }
 }

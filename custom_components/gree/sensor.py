@@ -39,6 +39,7 @@ SENSORS: tuple[GreeSensorEntityDescription, ...] = (
         state_class=SensorStateClass.MEASUREMENT,
         suggested_display_precision=0,
         value_fn=lambda device: device.outside_temperature if device._has_outside_temp_sensor else None,
+        exists_fn=lambda description, device: device._has_outside_temp_sensor is not False,
         available_fn=lambda device: device.available and device._has_outside_temp_sensor,
     ),
     GreeSensorEntityDescription(
@@ -48,6 +49,7 @@ SENSORS: tuple[GreeSensorEntityDescription, ...] = (
         native_unit_of_measurement=PERCENTAGE,
         suggested_display_precision=0,
         value_fn=lambda device: device.room_humidity if device._has_room_humidity_sensor else None,
+        exists_fn=lambda description, device: device._has_room_humidity_sensor is not False,
         available_fn=lambda device: device.available and device._has_room_humidity_sensor,
     ),
 )

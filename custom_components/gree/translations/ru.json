@@ -171,6 +171,16 @@
     "select": {
       "external_temperature_sensor": {
         "name": "Внешний датчик температуры"
+      },
+      "smart_wind": {
+        "name": "i Sense",
+        "state": {
+          "off": "Выкл",
+          "smart": "Умный",
+          "follow": "Обдув на человека",
+          "avoid": "Обдув мимо человека",
+          "surround": "Круговой обдув"
+        }
       }
     },
     "switch": {

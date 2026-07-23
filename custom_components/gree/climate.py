@@ -62,6 +62,21 @@ _LOGGER = logging.getLogger(__name__)
 
 SUPPORT_FLAGS = ClimateEntityFeature.TARGET_TEMPERATURE | ClimateEntityFeature.FAN_MODE | ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
 
+# Optional hardware, which only part of the Gree line-up has. Each entry maps the attribute
+# holding the detection result to the status column that is probed to detect it. A unit that
+# does not have the hardware answers a status request for that column with an empty result.
+#
+# zero_means_absent covers units that do answer the column but report a constant 0 because the
+# sensor is missing, which for a humidity reading is not a value the hardware could measure.
+OPTIONAL_FEATURES = (
+    ("_has_temp_sensor", "TemSen", False),
+    ("_has_anti_direct_blow", "AntiDirectBlow", False),
+    ("_has_light_sensor", "LigSen", False),
+    ("_has_outside_temp_sensor", "OutEnvTem", False),
+    ("_has_room_humidity_sensor", "DwatSen", True),
+    ("_has_smart_wind", "SmartWind", False),
+)
+
 
 async def create_gree_device(hass, config):
     """Create a Gree device instance from config."""
@@ -188,6 +203,7 @@ class GreeClimate(ClimateEntity):
         self._has_light_sensor = None
         self._has_outside_temp_sensor = None
         self._has_room_humidity_sensor = None
+        self._has_smart_wind = None
 
         self._current_temperature = None
         self._current_anti_direct_blow = None
@@ -282,7 +298,7 @@ class GreeClimate(ClimateEntity):
         return acOptions
 
     async def SendStateToAc(self):
-        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Air", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AntiDirectBlow", "LigSen"]
+        opt_list = ["Pow", "Mod", "SetTem", "WdSpd", "Air", "Blo", "Health", "SwhSlp", "Lig", "SwingLfRig", "SwUpDn", "Quiet", "Tur", "StHt", "TemUn", "HeatCoolType", "TemRec", "SvSt", "SlpMod", "AntiDirectBlow", "LigSen", "SmartWind"]
 
         # Collect values from _acOptions
         p_values = [self._acOptions.get(k) for k in opt_list]
@@ -466,93 +482,43 @@ class GreeClimate(ClimateEntity):
         self.UpdateHAOutsideTemperature()
         self.UpdateHARoomHumidity()
 
+    async def DetectOptionalFeatures(self):
+        """Probe which optional features the unit has.
+
+        Detection result per feature is cached, so this is cheap to call repeatedly and only
+        re-probes what is still undecided, e.g. after the unit was unreachable on a first try.
+        """
+        for attribute, column, zero_means_absent in OPTIONAL_FEATURES:
+            if getattr(self, attribute) is not None:
+                continue
+
+            _LOGGER.debug(f"{self._name}: Attempt to check whether device supports {column}")
+            try:
+                value = await self.GreeGetValues([column])
+            except Exception:
+                _LOGGER.debug(f"{self._name}: Could not determine whether device supports {column}. Retrying at next update()")
+                continue
+
+            # A unit without the hardware answers with an empty result instead of a value. Test
+            # for that rather than for a falsy value, so a supported feature that happens to
+            # read 0 is not mistaken for a missing one.
+            supported = value != []
+            if supported and zero_means_absent and value == 0:
+                supported = False
+
+            setattr(self, attribute, supported)
+            if supported:
+                self._acOptions.update({column: None})
+                self._optionsToFetch.append(column)
+                _LOGGER.debug(f"{self._name}: Device supports {column}")
+            else:
+                _LOGGER.debug(f"{self._name}: Device does not support {column}")
+
     async def SyncState(self, acOptions={}):
         # Fetch current settings from HVAC
         _LOGGER.debug(f"{self._name}: Starting device state sync")
 
-        if self._has_temp_sensor is None:
-            _LOGGER.debug("Attempt to check whether device has an built-in temperature sensor")
-            try:
-                temp_sensor = await self.GreeGetValues(["TemSen"])
-            except Exception:
-                _LOGGER.debug("Could not determine whether device has an built-in temperature sensor. Retrying at next update()")
-            else:
-                if temp_sensor:
-                    self._has_temp_sensor = True
-                    self._acOptions.update({"TemSen": None})
-                    self._optionsToFetch.append("TemSen")
-                    _LOGGER.debug("Device has an built-in temperature sensor")
-                else:
-                    self._has_temp_sensor = False
-                    _LOGGER.debug("Device has no built-in temperature sensor")
-
-        # Check if device has anti direct blow feature
-        if self._has_anti_direct_blow is None:
-            _LOGGER.debug("Attempt to check whether device has an anti direct blow feature")
-            try:
-                anti_direct_blow = await self.GreeGetValues(["AntiDirectBlow"])
-            except Exception:
-                _LOGGER.debug("Could not determine whether device has an anti direct blow feature. Retrying at next update()")
-            else:
-                if anti_direct_blow:
-                    self._has_anti_direct_blow = True
-                    self._acOptions.update({"AntiDirectBlow": None})
-                    self._optionsToFetch.append("AntiDirectBlow")
-                    _LOGGER.debug("Device has an anti direct blow feature")
-                else:
-                    self._has_anti_direct_blow = False
-                    _LOGGER.debug("Device has no anti direct blow feature")
-
-        # Check if device has light sensor
-        if self._has_light_sensor is None:
-            _LOGGER.debug("Attempt to check whether device has a built-in light sensor")
-            try:
-                light_sensor = await self.GreeGetValues(["LigSen"])
-            except Exception:
-                _LOGGER.debug("Could not determine whether device has a built-in light sensor. Retrying at next update()")
-            else:
-                if light_sensor:
-                    self._has_light_sensor = True
-                    self._acOptions.update({"LigSen": None})
-                    self._optionsToFetch.append("LigSen")
-                    _LOGGER.debug("Device has a built-in light sensor")
-                else:
-                    self._has_light_sensor = False
-                    _LOGGER.debug("Device has no built-in light sensor")
-
-        # Check if device has outside temperature sensor
-        if self._has_outside_temp_sensor is None:
-            _LOGGER.debug("Attempt to check whether device has an outside temperature sensor")
-            try:
-                outside_temp_sensor = await self.GreeGetValues(["OutEnvTem"])
-            except Exception:
-                _LOGGER.debug("Could not determine whether device has an outside temperature sensor. Retrying at next update()")
-            else:
-                if outside_temp_sensor:
-                    self._has_outside_temp_sensor = True
-                    self._acOptions.update({"OutEnvTem": None})
-                    self._optionsToFetch.append("OutEnvTem")
-                    _LOGGER.debug("Device has an outside temperature sensor")
-                else:
-                    self._has_outside_temp_sensor = False
-                    _LOGGER.debug("Device has no outside temperature sensor")
-
-        # Check if device has room humidity sensor
-        if self._has_room_humidity_sensor is None:
-            _LOGGER.debug("Attempt to check whether device has a room humidity sensor")
-            try:
-                humidity_sensor = await self.GreeGetValues(["DwatSen"])
-            except Exception:
-                _LOGGER.debug("Could not determine whether device has a room humidity sensor. Retrying at next update()")
-            else:
-                if humidity_sensor:
-                    self._has_room_humidity_sensor = True
-                    self._acOptions.update({"DwatSen": None})
-                    self._optionsToFetch.append("DwatSen")
-                    _LOGGER.debug("Device has a room humidity sensor")
-                else:
-                    self._has_room_humidity_sensor = False
-                    _LOGGER.debug("Device has no room humidity sensor")
+        await self.DetectOptionalFeatures()
 
         optionsToFetch = self._optionsToFetch
 
@@ -613,25 +579,30 @@ class GreeClimate(ClimateEntity):
                 _LOGGER.debug("available(): Device is offline")
                 return False
 
+    async def EnsureEncryptionKey(self, max_retries=8):
+        """Bind to the unit to obtain its encryption key. Returns whether a key is available."""
+        if self._encryption_key:
+            return True
+
+        if self.encryption_version == 1:
+            key = await GetDeviceKey(self._mac_addr, self._ip_addr, self._port, max_retries=max_retries)
+            if key:
+                self._encryption_key = key
+                self.CIPHER = AES.new(self._encryption_key, AES.MODE_ECB)
+        elif self.encryption_version == 2:
+            key = await GetDeviceKeyGCM(self._mac_addr, self._ip_addr, self._port, max_retries=max_retries)
+            if key:
+                self._encryption_key = key
+                self.CIPHER = GetGCMCipher(self._encryption_key)
+        else:
+            _LOGGER.error("Encryption version %s is not implemented." % self.encryption_version)
+
+        return bool(self._encryption_key)
+
     async def async_update(self):
         """Retrieve latest state."""
         _LOGGER.debug("async_update()")
-        if not self._encryption_key:
-            if self.encryption_version == 1:
-                key = await GetDeviceKey(self._mac_addr, self._ip_addr, self._port)
-                if key:
-                    self._encryption_key = key
-                    self.CIPHER = AES.new(self._encryption_key, AES.MODE_ECB)
-                    await self.SyncState()
-            elif self.encryption_version == 2:
-                key = await GetDeviceKeyGCM(self._mac_addr, self._ip_addr, self._port)
-                if key:
-                    self._encryption_key = key
-                    self.CIPHER = GetGCMCipher(self._encryption_key)
-                    await self.SyncState()
-            else:
-                _LOGGER.error("Encryption version %s is not implemented." % self.encryption_version)
-        else:
+        if await self.EnsureEncryptionKey():
             await self.SyncState()
 
     @property
@@ -779,6 +750,22 @@ class GreeClimate(ClimateEntity):
             _LOGGER.debug(f"{self._name}: room_humidity() = {self._current_room_humidity}")
             return self._current_room_humidity
         return None
+
+    @property
+    def smart_wind_mode(self):
+        """Return the current i Sense airflow mode, if the unit has the feature."""
+        if not self._has_smart_wind:
+            return None
+        value = self._acOptions.get("SmartWind")
+        for mode, mode_value in MODES_MAPPING["SmartWind"].items():
+            if value == mode_value:
+                return mode
+        return None
+
+    async def async_set_smart_wind_mode(self, mode):
+        """Set the i Sense airflow mode."""
+        await self.SyncState({"SmartWind": MODES_MAPPING["SmartWind"][mode]})
+        self.schedule_update_ha_state()
 
     @property
     def extra_state_attributes(self):

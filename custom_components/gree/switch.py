@@ -22,6 +22,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.restore_state import RestoreEntity
 
 # Local imports
+from .const import DOMAIN
 from .entity import GreeEntity, GreeEntityDescription
 
 _LOGGER = logging.getLogger(__name__)
@@ -140,6 +141,7 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         icon="mdi:weather-windy",
         value_fn=lambda device: device._acOptions.get("AntiDirectBlow") == 1,
         set_fn=_set_anti_direct_blow,
+        exists_fn=lambda description, device: getattr(device, "_has_anti_direct_blow", None) is not False,
         available_fn=lambda device: getattr(device, "_has_anti_direct_blow", False),
     ),
     GreeSwitchEntityDescription(
@@ -147,6 +149,7 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         icon="mdi:lightbulb-on",
         value_fn=lambda device: device._acOptions.get("LigSen") == 0,  # LigSen=0 means sensor is active
         set_fn=_set_light_sensor,
+        exists_fn=lambda description, device: getattr(device, "_has_light_sensor", None) is not False,
         available_fn=lambda device: getattr(device, "_has_light_sensor", False),
     ),
     # These entities are not kept in the climate device
@@ -182,7 +185,12 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Gree switch based on a config entry."""
-    async_add_entities(GreeSwitchEntity(hass, entry, description) for description in SWITCHES)
+    device = hass.data[DOMAIN][entry.entry_id]["device"]
+    async_add_entities(
+        GreeSwitchEntity(hass, entry, description)
+        for description in SWITCHES
+        if description.exists_fn(description, device)
+    )
 
 
 class GreeSwitchEntity(GreeEntity, SwitchEntity, RestoreEntity):
