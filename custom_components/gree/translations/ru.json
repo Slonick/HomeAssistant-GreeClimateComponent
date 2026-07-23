@@ -184,6 +184,9 @@
       "auto_xfan": {
         "name": "Авто X-Fan"
       },
+      "skip_unchanged": {
+        "name": "Не повторять команды"
+      },
       "auto_light": {
         "name": "Автоматический свет"
       },

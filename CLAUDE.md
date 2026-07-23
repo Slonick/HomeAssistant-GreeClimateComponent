@@ -72,6 +72,7 @@ If the unit is unreachable at setup, detection stays `None` and every entity is 
 
 `SyncState()` drops a request whose values the unit already holds. The unit beeps on every
 command it accepts and has no buzzer control, so resending an unchanged setting is audible.
+The `skip_unchanged` switch (integration-side, like `auto_xfan`) turns the behaviour off.
 
 ### Device State
 

@@ -68,6 +68,10 @@ async def _set_auto_xfan(device, value: bool) -> None:
     setattr(device, "_auto_xfan", value)
 
 
+async def _set_skip_unchanged(device, value: bool) -> None:
+    setattr(device, "_skip_unchanged", value)
+
+
 async def _set_auto_light(device, value: bool) -> None:
     setattr(device, "_auto_light", value)
 
@@ -122,6 +126,14 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
         icon="mdi:fan-auto",
         value_fn=lambda device: getattr(device, "_auto_xfan", False),
         set_fn=_set_auto_xfan,
+        restore_state=True,
+        entity_category=EntityCategory.CONFIG,
+    ),
+    GreeSwitchEntityDescription(
+        property_key="skip_unchanged",
+        icon="mdi:transfer-off",
+        value_fn=lambda device: getattr(device, "_skip_unchanged", True),
+        set_fn=_set_skip_unchanged,
         restore_state=True,
         entity_category=EntityCategory.CONFIG,
     ),

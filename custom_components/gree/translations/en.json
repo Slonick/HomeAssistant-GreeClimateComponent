@@ -212,6 +212,10 @@
       "auto_xfan": {
         "name": "Auto X-Fan"
       },
+      "skip_unchanged": {
+        "name": "Skip Unchanged Commands",
+        "description": "Do not send a setting the unit already holds. The unit beeps on every command it accepts, so leaving this on keeps automations that reassert a setting silent."
+      },
       "auto_light": {
         "name": "Auto Light"
       },

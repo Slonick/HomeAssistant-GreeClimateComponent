@@ -36,7 +36,8 @@ connects directly during initial setup and then works through Gree's servers.
   one does — was silently skipped.
 - **Repeated commands.** A request for a value the unit already holds is dropped instead of
   being sent. The unit beeps every time it accepts a command and offers no way to silence it,
-  so an automation that reasserts a setting on a schedule used to beep on every run.
+  so an automation that reasserts a setting on a schedule used to beep on every run. The
+  **Skip Unchanged Commands** switch turns this off when you want every request to go out.
 - **Entity creation.** Detection now runs once before the platforms are set up and the platforms
   honour `exists_fn`, so entities are no longer created for hardware the unit does not have. When
   the unit is unreachable at setup, detection stays undecided and every entity is created, as before.
@@ -87,6 +88,7 @@ schedules temperature better than the unit does.
 | `switch` Sleep | Cooling and heating only |
 | `switch` Lights, Light sensor | Display backlight and its automatic brightness |
 | `switch` Auto X-Fan, Auto Light | Integration-side automation, not unit state |
+| `switch` Skip Unchanged Commands | Drop a request the unit already satisfies, on by default |
 | `number` Temperature step | Step used by the up/down controls |
 
 Fan speeds are `auto`, five levels, `quiet` and `turbo`, matching the remote.

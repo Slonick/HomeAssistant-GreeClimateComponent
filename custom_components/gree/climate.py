@@ -221,6 +221,8 @@ class GreeClimate(ClimateEntity):
 
         # Initialize auto switches
         self._auto_light = False
+        # Whether to drop a command asking for what the unit already holds
+        self._skip_unchanged = True
         self._auto_xfan = False
 
         # helper method to determine TemSen offset
@@ -440,7 +442,7 @@ class GreeClimate(ClimateEntity):
             # The unit beeps every time it accepts a command and cannot be told not to, so
             # drop a request that asks for what it already holds. Automations that reassert a
             # setting on a schedule would otherwise beep on every run.
-            if acOptions and all(self._acOptions.get(key) == value for key, value in acOptions.items()):
+            if self._skip_unchanged and acOptions and all(self._acOptions.get(key) == value for key, value in acOptions.items()):
                 _LOGGER.debug(f"{self._name}: Device already holds {acOptions}, not sending a command")
                 acOptions = {}
 
