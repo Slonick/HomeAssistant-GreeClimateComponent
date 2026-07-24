@@ -131,7 +131,7 @@ SWITCHES: tuple[GreeSwitchEntityDescription, ...] = (
     ),
     GreeSwitchEntityDescription(
         property_key="skip_unchanged",
-        icon="mdi:transfer-off",
+        icon="mdi:repeat-off",
         value_fn=lambda device: getattr(device, "_skip_unchanged", True),
         set_fn=_set_skip_unchanged,
         restore_state=True,
