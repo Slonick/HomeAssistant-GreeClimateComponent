@@ -183,6 +183,11 @@
         "name": "שלב טמפרטורה"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "טמפרטורת המזגן"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "חיישן טמפרטורה חיצוני"

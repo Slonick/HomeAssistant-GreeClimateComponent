@@ -186,6 +186,7 @@ class GreeClimate(ClimateEntity):
         self._has_smart_wind = None
 
         self._current_temperature = None
+        self._builtin_temperature = None
         self._current_light_sensor = None
 
         self._firstTimeRun = True
@@ -333,7 +334,32 @@ class GreeClimate(ClimateEntity):
                     self._fan_mode = key
         _LOGGER.debug(f"{self._name}: Fan mode updated to {self._fan_mode}")
 
+    def ResolveBuiltinTemperature(self):
+        """Return what the unit's own sensor reads, in the configured unit."""
+        if not self._has_temp_sensor:
+            return None
+
+        _LOGGER.debug(f"{self._name}: Built-in temperature sensor reading: {self._acOptions['TemSen']}")
+
+        if self._temp_sensor_offset is None:  # user hasn't chosen an offset
+            temp_c = self._process_temp_sensor(self._acOptions["TemSen"])
+            _LOGGER.debug("ResolveBuiltinTemperature: User has not chosen an offset, determining it from the readings.")
+        elif self._temp_sensor_offset is True:
+            temp_c = self._acOptions["TemSen"] - TEMSEN_OFFSET
+        else:
+            temp_c = self._acOptions["TemSen"]
+
+        if self._unit_of_measurement == "°F":
+            return gree_c_to_f(SetTem=temp_c, TemRec=0)  # Convert using the TemRec bit
+        if self._unit_of_measurement != "°C":
+            _LOGGER.error("Unknown unit of measurement: %s" % self._unit_of_measurement)
+        return temp_c
+
     def UpdateHACurrentTemperature(self):
+        # Resolve the unit's own reading either way, so it stays available as its own sensor
+        # even while an external sensor drives the climate entity.
+        self._builtin_temperature = self.ResolveBuiltinTemperature()
+
         # Use external temperature sensor if available
         if self._external_temperature_sensor:
             # Use external temperature sensor
@@ -348,34 +374,10 @@ class GreeClimate(ClimateEntity):
                 except (ValueError, TypeError) as ex:
                     _LOGGER.error(f"{self._name}: Unable to update from external temp sensor {self._external_temperature_sensor}: {ex}")
 
-        # Use built-in AC temperature sensor if available
-        if self._has_temp_sensor:
-            _LOGGER.debug(f"{self._name}: Built-in temperature sensor reading: {self._acOptions['TemSen']}")
-
-            if self._temp_sensor_offset is None:  # user hasn't chosen an offset
-                # User hasn't set automaticaly, so try to determine the offset
-                temp_c = self._process_temp_sensor(self._acOptions["TemSen"])
-                _LOGGER.debug("method UpdateHACurrentTemperature: User has not chosen an offset, using process_temp_sensor() to automatically determine offset.")
-            else:
-                # User set
-                if self._temp_sensor_offset is True:
-                    temp_c = self._acOptions["TemSen"] - TEMSEN_OFFSET
-
-                elif self._temp_sensor_offset is False:
-                    temp_c = self._acOptions["TemSen"]
-
-                _LOGGER.debug(f"method UpdateHACurrentTemperature: User has chosen an offset ({self._temp_sensor_offset})")
-
-            temp_f = gree_c_to_f(SetTem=temp_c, TemRec=0)  # Convert to Fahrenheit using TemRec bit
-
-            if self._unit_of_measurement == "°C":
-                self._current_temperature = temp_c
-            elif self._unit_of_measurement == "°F":
-                self._current_temperature = temp_f
-            else:
-                _LOGGER.error("Unknown unit of measurement: %s" % self._unit_of_measurement)
-
-            _LOGGER.debug(f"{self._name}: UpdateHACurrentTemperature: HA current temperature set with device built-in temperature sensor state: {self._current_temperature}{self._unit_of_measurement}")
+        # Fall back to the unit's own sensor
+        if self._builtin_temperature is not None:
+            self._current_temperature = self._builtin_temperature
+            _LOGGER.debug(f"{self._name}: Current temperature from the built-in sensor: {self._current_temperature}{self._unit_of_measurement}")
 
     def UpdateHAStateToCurrentACState(self):
         self.UpdateHATargetTemperature()

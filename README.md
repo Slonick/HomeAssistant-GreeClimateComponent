@@ -20,6 +20,8 @@ connects directly during initial setup and then works through Gree's servers.
   room: `off`, `smart`, `follow`, `avoid`, `surround`. Only available while cooling or heating,
   and it drives both louvers by itself. Maps to the `SmartWind` status column.
 - **Auxiliary heat** (`switch`) — the E-HEATER button, available in heating mode. Maps to `AssHt`.
+- **Indoor temperature** (`sensor`) — what the unit's own sensor reads. The climate entity reports
+  whichever sensor drives it, so this keeps the unit's reading available alongside an external one.
 - **Ukrainian translation.**
 
 ### Fixed
@@ -47,7 +49,7 @@ connects directly during initial setup and then works through Gree's servers.
 Not present on this model, confirmed against the unit and the owner's manual:
 
 - Anti direct blow, outside temperature sensor, room humidity sensor — the unit answers those
-  status columns with an empty result. The whole `sensor` platform went with them.
+  status columns with an empty result.
 - Health. The firmware accepts the `Health` flag and the remote button toggles it, but the
   service manual for this model states the series has no health function and no ioniser appears
   in either parts list. The flag drives nothing.
@@ -90,6 +92,7 @@ schedules temperature better than the unit does.
 | `switch` Auto X-Fan, Auto Light | Integration-side automation, not unit state |
 | `switch` Skip Unchanged Commands | Drop a request the unit already satisfies, on by default |
 | `number` Temperature step | Step used by the up/down controls |
+| `sensor` Indoor temperature | The unit's own reading, kept alongside any external sensor |
 
 Fan speeds are `auto`, five levels, `quiet` and `turbo`, matching the remote.
 

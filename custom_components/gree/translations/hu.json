@@ -182,6 +182,11 @@
         "name": "Hőmérséklet lépés"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Beltéri hőmérséklet"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "Külső hőmérséklet érzékelő"

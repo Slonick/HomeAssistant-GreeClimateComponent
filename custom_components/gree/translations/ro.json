@@ -182,6 +182,11 @@
         "name": "Pas temperatură"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Temperatura interioară"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "Senzor temperatură extern"

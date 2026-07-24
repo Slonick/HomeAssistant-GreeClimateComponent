@@ -182,6 +182,11 @@
         "name": "Temperaturschritt"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Innentemperatur"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "Externer Temperatursensor"

@@ -182,6 +182,11 @@
         "name": "Passo temperatura"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Temperatura interna"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "Sensore temperatura esterno"

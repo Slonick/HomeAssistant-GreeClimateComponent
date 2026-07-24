@@ -46,7 +46,7 @@ Polling: every 60s via async_update() → GreeGetValues()
 
 | File | Purpose |
 |---|---|
-| `__init__.py` | Config entry setup, one-shot feature probe, platform forwarding (climate/switch/number/select) |
+| `__init__.py` | Config entry setup, one-shot feature probe, platform forwarding (climate/switch/number/select/sensor) |
 | `climate.py` | Core file. `GreeClimate(ClimateEntity)` — HVAC control, state polling, temperature handling, all AC commands |
 | `gree_protocol.py` | UDP communication, AES-GCM, device discovery, key negotiation, retry logic (8 attempts with backoff) |
 | `config_flow.py` | UI config flow: discovery → naming → setup. Also the options flow |
@@ -55,6 +55,7 @@ Polling: every 60s via async_update() → GreeGetValues()
 | `entity.py` | `GreeEntity` base class, `GreeEntityDescription` dataclass |
 | `switch.py` | Toggle entities (x-fan, lights, auxiliary heat, sleep, light sensor, …) |
 | `number.py` | Target temperature step |
+| `sensor.py` | The unit's own temperature reading |
 | `select.py` | i Sense airflow mode and external temperature sensor selection |
 
 ### Feature Detection
@@ -96,6 +97,10 @@ Every remaining switch and climate option was verified by writing its current va
 checking the unit echoes the option — that is how the dead beeper switch was found.
 
 ### Temperature Handling
+
+`ResolveBuiltinTemperature()` always resolves what the unit's own sensor reads into
+`_builtin_temperature`, whether or not an external sensor drives the climate entity, so the
+`indoor_temperature` sensor keeps working alongside one.
 
 The AC uses integer `SetTem` plus a `TemRec` bit for 0.5°C precision. Some devices report sensor
 temps with a +40°C offset; `TempOffsetResolver` auto-detects which mode the device uses from

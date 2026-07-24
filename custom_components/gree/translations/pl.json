@@ -182,6 +182,11 @@
         "name": "Krok temperatury"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Temperatura jednostki"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "Zewnętrzny czujnik temperatury"

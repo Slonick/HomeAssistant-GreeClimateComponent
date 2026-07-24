@@ -181,6 +181,12 @@
         "name": "Temperature Step"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Indoor Temperature",
+        "description": "What the air conditioner's own sensor reads, independent of any external sensor configured for the climate entity."
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "External Temperature Sensor"

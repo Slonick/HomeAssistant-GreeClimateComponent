@@ -182,6 +182,11 @@
         "name": "温度步进"
       }
     },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "机组温度"
+      }
+    },
     "select": {
       "external_temperature_sensor": {
         "name": "外部温度传感器"
